@@ -22,5 +22,7 @@ if IS_VEHICLE:
 
     CONF_JSON_PATH = pl.Path('src', 'config', conf_files[0])
 
+# TODO: get suffix for vehicle
+
 status_msgs = {}
 

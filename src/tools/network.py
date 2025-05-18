@@ -1,5 +1,5 @@
 import os
-from src.tools.commander import run_shell_command as cmd
+from tools.commander import run_shell_command as cmd
 
 class NetworkHandler:
     def __init__(self, *args, **kwargs):

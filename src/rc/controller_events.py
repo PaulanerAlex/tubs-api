@@ -41,10 +41,11 @@ class ControllerEvents:
             print("Controller unplugged")
             return False, {'unplugged': True}
         ev_dict = {}
-        synced = False # TODO: check if this is reasonable
+        synced = True # TODO: check if this is reasonable
         for event in events:
             if event.ev_type == 'Sync':
                 synced = True
+                continue
             elif event.ev_type == 'Absolute':
                 if event.code in ['ABS_Z', 'ABS_RZ']: # TODO: get trigger names from config.json
                     ev_dict[event.code] = event.state / TRIGGER_MAX
@@ -54,8 +55,6 @@ class ControllerEvents:
                     ev_dict[event.code] = event.state
             elif event.ev_type == 'Key':
                 ev_dict[event.code] = True if event.state == 1 else False
-            print(f"event: {event.ev_type}, code: {event.code}, state: {event.state}")
-
         return synced, ev_dict
 
 
