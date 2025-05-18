@@ -15,7 +15,7 @@ class Messenger:
         The message has has a header and a body.
         Parses every argument and adds it to the header.
         The message should not contain any brackets, as they are used for formatting.
-        If the keyword argument log=True is passed, the message returned won't contain the head of the header.
+        If the keyword argument log=True is passed, the message returned won't contain the 'head' and 'name' of the header.
         The message contains the time header argument, which is encoded in the ISO 8601 format.
         the head can be one of the following.
         

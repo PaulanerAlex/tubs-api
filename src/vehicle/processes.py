@@ -1,13 +1,11 @@
-import multiprocessing as mp
 from multiprocessing import Process, Pipe
 from tools.debug_sim import CarSimulation
+from tools.communication import start_com_process
 from rc.controller_events import ControllerEvents
 import time
-import sys
 
 
-# TODO: implement telemetry
-def control_process(conn):
+def debug_control_process(conn): # for controlling without wireless connection
     
     time.sleep(1)  # Let simulation start
     
@@ -41,11 +39,11 @@ def start_proc():
     parent_conn, child_conn = Pipe()
 
     # Start sim control process
-    p = Process(target=control_process, args=(child_conn,))
+    p = Process(target=start_com_process, args=(parent_conn,))
     p.start()
 
     # Start simulation in main process
-    sim = CarSimulation(pipe_conn=parent_conn, acceleration=0.2, steering_angle_deg=10)
+    sim = CarSimulation(pipe_conn=child_conn, acceleration=0.2, steering_angle_deg=10)
     sim.run()
 
     p.join()  # Wait for control process to finish

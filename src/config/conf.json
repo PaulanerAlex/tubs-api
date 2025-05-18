@@ -1,0 +1,25 @@
+
+
+{
+    "connection" : {
+        "type" : "wifi",
+        "ssid" : "",
+        "password" : ""
+    },
+    "input" : {
+        "lib" : "inputs"
+    },
+    "communication" : {
+        "encoding" : {
+            "ABS_RZ" : "acc",
+            "ABS_Z" : "dcc",
+            "ABS_X" : "str",
+            "" : "ems"
+        },
+        "encoding_norm" : {
+            "ABS_RZ" : 255,
+            "ABS_Z" : 255,
+            "ABS_X" : 65535
+        }
+    }
+}

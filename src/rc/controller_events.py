@@ -1,10 +1,14 @@
 from inputs import get_gamepad
+from tools.config_handler import ConfigHandler
+from multiprocessing import Pipe
 
-
-TRIGGER_MAX = 2**8 - 1
-STICK_MAX = 2**16 - 1
+_TRIGGER_MAX = 2**8 - 1
+_STICK_MAX = 2**16 - 1
 
 class ControllerEvents:
+    def __init__(self, mp_connect=None):
+        self.mp_connect = mp_connect
+        self.cnf = ConfigHandler()
 
     def loop_until_event(self, event_type=None):
         """
@@ -46,15 +50,13 @@ class ControllerEvents:
             if event.ev_type == 'Sync':
                 synced = True
                 continue
-            elif event.ev_type == 'Absolute':
-                if event.code in ['ABS_Z', 'ABS_RZ']: # TODO: get trigger names from config.json
-                    ev_dict[event.code] = event.state / TRIGGER_MAX
-                elif event.code in ['ABS_X', 'ABS_Y', 'ABS_RX', 'ABS_RY']: # TODO: get stick names from config.json
-                    ev_dict[event.code] = event.state / STICK_MAX
-                else:
-                    ev_dict[event.code] = event.state
-            elif event.ev_type == 'Key':
-                ev_dict[event.code] = True if event.state == 1 else False
+            try:
+                code, max_val = self.cnf.get_com_encoding(event.code)
+                ev_dict[code] = event.state / max_val if max_val else event.state
+            except KeyError:
+                continue
+
+        # TODO: add support for buttons
         return synced, ev_dict
 
 
