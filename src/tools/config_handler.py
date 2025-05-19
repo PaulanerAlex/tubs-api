@@ -23,7 +23,7 @@ class ConfigHandler:
     
     def get_com_encoding(self, input_key):
         '''
-        returns the controller specific communication encoding dictionary
+        returns the controller specific communication encoding for a given input key
         '''
         
         com_map = self._get_content()['communication']['encoding'] if not self.com_map else self.com_map

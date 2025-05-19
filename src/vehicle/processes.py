@@ -1,9 +1,32 @@
 from multiprocessing import Process, Pipe
 from tools.debug_sim import CarSimulation
-from tools.communication import start_com_process
+from tools.communication import Communication
 from rc.controller_events import ControllerEvents
+from config.config import COMMUNICATION_KEY
 import time
 
+
+def start_com_process(mp_connect_sub, mp_connect_pub):
+    """
+    Start the communication process.
+    """
+
+    Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
+
+    # Keep the process alive by waiting for the connection to close
+    # This will block until the other end of the Pipe is closed
+    try:
+        while True:
+            time.sleep(0.001)  # Sleep briefly to avoid busy waiting
+            # if mp_connect_pub.poll(1):
+                # msg = conn.recv()
+                # TODO: check if this is efficient like this
+                # TODO: improve this whole function
+                # TODO: definetely change this
+                # Optionally handle messages from the main process here
+                # threading.Event().wait(0.001) # Sleep briefly to avoid busy waiting
+    except (EOFError, KeyboardInterrupt):
+        pass
 
 def debug_control_process(conn): # for controlling without wireless connection
     
@@ -36,14 +59,16 @@ def debug_control_process(conn): # for controlling without wireless connection
     # conn.send('exit')
 
 def start_proc():
-    parent_conn, child_conn = Pipe()
+    # Create Pipes for communication between processes
+    parent_conn_sub, child_conn_sub = Pipe()
+    parent_conn_pub, child_conn_pub = Pipe()
 
-    # Start sim control process
-    p = Process(target=start_com_process, args=(parent_conn,))
+    # Start communication process
+    p = Process(target=start_com_process, args=(parent_conn_sub, child_conn_pub))
     p.start()
 
-    # Start simulation in main process
-    sim = CarSimulation(pipe_conn=child_conn, acceleration=0.2, steering_angle_deg=10)
+    # Start simulation in main process # TODO: eventually implement log publisher for simulation
+    sim = CarSimulation(pipe_conn=child_conn_sub, acceleration=0.2, steering_angle_deg=10)
     sim.run()
 
     p.join()  # Wait for control process to finish

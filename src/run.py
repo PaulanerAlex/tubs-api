@@ -1,4 +1,3 @@
-import multiprocessing as mp
 from config.config import IS_RC, IS_VEHICLE
 if IS_RC:
     from vehicle.processes import start_proc

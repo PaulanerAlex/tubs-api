@@ -1,11 +1,42 @@
 from multiprocessing import Process, Pipe
 from rc.controller_events import ControllerEvents
+from tools.communication import Communication
+from config.config import COMMUNICATION_KEY
+import time
+
+def start_com_process(mp_connect_sub, mp_connect_pub):
+    """
+    Start the communication process.
+    """
+
+    Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
+
+    # Keep the process alive by waiting for the connection to close
+    # This will block until the other end of the Pipe is closed
+    try:
+        while True:
+            time.sleep(0.001)  # Sleep briefly to avoid busy waiting
+            # TODO: check if this is efficient like this
+            # TODO: improve this whole function
+            # TODO: definetely change this
+            # Optionally handle messages from the main process here
+            # threading.Event().wait(0.001) # Sleep briefly to avoid busy waiting
+
+    except (EOFError, KeyboardInterrupt):
+        pass
 
 def start_proc():
-    child_conn, parent_conn = Pipe()
+    child_conn_pub, parent_conn_pub = Pipe()
+    child_conn_sub, parent_conn_sub = Pipe()
 
-    ControllerEvents(mp_connect=parent_conn)
+    input = ControllerEvents(mp_connect=parent_conn_pub)
 
+    com_proc = Process(target=start_com_process, args=(child_conn_sub, child_conn_pub))
+    com_proc.start()
+
+    input.event_loop()
+
+    # TODO: start gui process
     # TODO: start controller process
     # TODO: start communication process
-    pass
+    # TODO: check if the pipe buffer will never be full, so the child process is faster
