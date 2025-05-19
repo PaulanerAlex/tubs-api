@@ -1,8 +1,8 @@
 from config.config import IS_RC, IS_VEHICLE
 if IS_RC:
-    from vehicle.processes import start_proc
-if IS_VEHICLE:
     from rc.processes import start_proc
+if IS_VEHICLE:
+    from vehicle.processes import start_proc
 
 if __name__ == "__main__":
     # TODO: add initialization code for connection establishment etc

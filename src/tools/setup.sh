@@ -1,7 +1,7 @@
 #! /bin/bash
 
-REPO_LINK=""
-REPO_FOLDER_NAME=""
+REPO_LINK="https://github.com/PaulanerAlex/tubs-api.git"
+REPO_FOLDER_NAME="tubs-api"
 
 # prompt user for setup type
 read -p "Setup for remote controller or vehicle? (Enter 'rc' or 've'): " SETUP_TYPE
@@ -38,17 +38,21 @@ if [ $? -ne 0 ]; then
     echo "ERROR: failed to clone the repository."
     exit 1
 fi
-cd $REPO_FOLDER_NAME/src
+cd $REPO_FOLDER_NAME
 
 # setup virtual environment
 python3 -m venv env
 source env/bin/activate
-pip install -r requirements.txt # TODO: change to uv
+
+cd src
+
 
 if [[ "$SETUP_TYPE" == "rc" ]]; then
     touch src/on_rc.txt
+    pip install -r requirements_rc.txt # TODO: change to uv, pip crashes on rpi zero 2w most certainly because of the low memory
 elif [[ "$SETUP_TYPE" == "ve" ]]; then
     touch src/on_vehicle.txt
+    pip install -r requirements.txt # TODO: change to uv, pip crashes on rpi zero 2w most certainly because of the low memory
 fi
 
 # TODO: setup auto run on startup

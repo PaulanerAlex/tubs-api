@@ -37,6 +37,4 @@ def start_proc():
     input.event_loop()
 
     # TODO: start gui process
-    # TODO: start controller process
-    # TODO: start communication process
     # TODO: check if the pipe buffer will never be full, so the child process is faster
