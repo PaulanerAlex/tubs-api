@@ -16,8 +16,8 @@ class ConfigHandler:
             self.path = path
 
         if communication:
-            self.com_map = self._get_content()['communication']['encoding']
-            self.com_norm_map = self._get_content()['communication']['encoding_norm']
+            self.com_map = self._get_content['communication']['encoding']
+            self.com_norm_map = self._get_content['communication']['encoding_norm']
    
     @property
     def _get_content(self):
@@ -29,8 +29,8 @@ class ConfigHandler:
         returns the controller specific communication encoding for a given input key
         '''
         
-        com_map = self._get_content()['communication']['encoding'] if not self.com_map else self.com_map
-        com_norm_map = self._get_content()['communication']['encoding_norm'] if not self.com_norm_map else self.com_norm_map
+        com_map = self._get_content['communication']['encoding'] if not self.com_map else self.com_map
+        com_norm_map = self._get_content['communication']['encoding_norm'] if not self.com_norm_map else self.com_norm_map
 
         # TODO: add support for buttons
         if input_key in com_map.keys():
@@ -44,7 +44,7 @@ class ConfigHandler:
         returns the wifi config parameters
         '''
         try:
-            conf_map = self._get_content()['connection']
+            conf_map = self._get_content['connection']
         except KeyError:
             raise KeyError('No connection config found in config file')
 
@@ -61,7 +61,7 @@ class ConfigHandler:
         returns the vehicle config parameters
         '''
         try:
-            conf_map = self._get_content()['vehicle']
+            conf_map = self._get_content['vehicle']
         except KeyError:
             raise KeyError('No vehicle config found in config file')
         
