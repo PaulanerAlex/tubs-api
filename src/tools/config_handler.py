@@ -22,7 +22,7 @@ class ConfigHandler:
     @property
     def _get_content(self):
         with open(self.path) as file:
-            return(json.loads(file))
+            return(json.load(file))
 
     def get_com_encoding(self, input_key):
         '''
