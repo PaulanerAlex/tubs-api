@@ -44,14 +44,14 @@ class ConfigHandler:
         returns the wifi config parameters
         '''
         try:
-            map = self._get_content()['connection']
+            conf_map = self._get_content()['connection']
         except KeyError:
             raise KeyError('No connection config found in config file')
 
-        if map['type'] == 'wifi':
-            ssid = map['ssid']
-            password = map['password']
-            interface = map['interface']
+        if conf_map['type'] == 'wifi':
+            ssid = conf_map['ssid']
+            password = conf_map['password']
+            interface = conf_map['interface']
             return ssid, password, interface
         else:
             raise ValueError('No wifi config found in config file')
@@ -61,12 +61,12 @@ class ConfigHandler:
         returns the vehicle config parameters
         '''
         try:
-            map = self._get_content()['vehicle']
+            conf_map = self._get_content()['vehicle']
         except KeyError:
             raise KeyError('No vehicle config found in config file')
         
-        vehicle_type = map['vehicle_type']
-        name = map['name']
+        vehicle_type = conf_map['vehicle_type']
+        name = conf_map['name']
         return vehicle_type, name
 
     # TODO: write function to change config
