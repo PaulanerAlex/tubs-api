@@ -12,17 +12,17 @@ COMMUNICATION_KEY = None # gets later declared
 RUNTIME_VARS = {}
 
 if IS_RC:
-    CONF_JSON_PATH = pl.Path('src', 'config', 'conf.json')
+    CONF_JSON_PATH = pl.Path('config', 'conf.json')
 if IS_VEHICLE:
     # cooses the alphabetically first config in src/config but can be changed in settings later
-    conf_files = os.listdir(pl.Path('src', 'config'))
+    conf_files = os.listdir(pl.Path('config'))
     # remove conf.py from json config files
     for conf_file in conf_files:
         if conf_file[-3:] == '.py':
             conf_files.remove(conf_file)
     conf_files = sorted(conf_files)
 
-    CONF_JSON_PATH = pl.Path('src', 'config', conf_files[0])
+    CONF_JSON_PATH = pl.Path('config', conf_files[0])
 
 # TODO: get suffix for vehicle
 
