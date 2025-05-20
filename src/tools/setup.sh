@@ -29,6 +29,7 @@ sudo apt update && sudo apt upgrade
 
 # install python, pip and venv
 sudo apt install python3 python3-pip python3-venv
+sudo apt install libjpeg-dev # required for pillow
 
 # setup git repo
 sudo apt install git

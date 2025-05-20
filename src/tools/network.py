@@ -1,7 +1,7 @@
 import os
 from tools.commander import run_shell_command as cmd
 from tools.timers import timer
-
+from tools.config_handler import ConfigHandler
 
 def network_init():
     """

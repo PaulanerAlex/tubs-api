@@ -11,7 +11,7 @@ class ConfigHandler:
         uses path from config, if path not provided
         '''
         if not path:
-            path = cnf.CONF_JSON_PATH
+            self.path = cnf.CONF_JSON_PATH
         else:
             self.path = path
 
