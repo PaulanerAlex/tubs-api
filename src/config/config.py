@@ -12,7 +12,7 @@ COMMUNICATION_KEY = None # gets later declared
 RUNTIME_VARS = {}
 
 if IS_RC:
-    CONF_JSON_PATH = pl.Path('src', 'config', 'config.json')
+    CONF_JSON_PATH = pl.Path('src', 'config', 'conf.json')
 if IS_VEHICLE:
     # cooses the alphabetically first config in src/config but can be changed in settings later
     conf_files = os.listdir(pl.Path('src', 'config'))
