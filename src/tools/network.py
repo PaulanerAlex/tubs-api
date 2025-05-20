@@ -1,13 +1,24 @@
 import os
 from tools.commander import run_shell_command as cmd
+from tools.timers import timer
+
+
+def network_init():
+    """
+    Initialize the network.
+    """
+    # connect to wifi from config if not already connected to this network
+    ssid, password, interface = ConfigHandler().get_wifi_config()
+    net = NetworkHandler(ssid=ssid, password=password, interface=interface)
+    current_ssid, current_interface = net.get_wifi_connection()
+    if not current_ssid == ssid and current_interface == interface: 
+        net.connect_to_network()
 
 class NetworkHandler:
     def __init__(self, *args, **kwargs):
-        self.server_name = kwargs['server_name']
         self.password = kwargs['password']
-        self.interface_name = kwargs['interface']
+        self.interface = kwargs['interface']
         self.ssid = kwargs['ssid']
-        self.main_dict = {}
 
     def get_available_networks(self):
         """
@@ -15,7 +26,7 @@ class NetworkHandler:
         Returns None if something goes wrong.
         """
         command = """sudo iwlist wlp2s0 scan | grep -ioE 'ssid:"(.*{}.*)'"""
-        result = cmd(command.format(self.server_name))
+        result = cmd(command.format(self.ssid))
 
         if not result:
             # TODO: change following to logger
@@ -26,13 +37,14 @@ class NetworkHandler:
             return None
         else:
             ssid_list = [item.lstrip('SSID:').strip('"\n') for item in result]
-            print("Successfully get ssids {}".format(str(ssid_list)))
-
+            print(f"Successfully get ssids {str(ssid_list)}")
+    
+    @timer
     def connect_to_network(self, ssid):
         """
         Connect to the given network.
         """
-        command = f"nmcli d wifi connect {self.ssid} password {self.password} iface {self.interface_name}"
+        command = f"nmcli d wifi connect {self.ssid} password {self.password} iface {self.interface}"
         self.ssid = ssid
         # FIXME: debug the following
         try:
@@ -45,3 +57,20 @@ class NetworkHandler:
             # TODO: change following to logger
             print(f"Couldn't connect to ssid : {self.ssid}. {e}")
             return False
+        
+    def get_wifi_connection(self):
+        command = "nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device"
+        output = cmd(command)
+        
+        if not output:
+            return None, None
+
+        for line in output.split('\n'):
+            parts = line.split(':')
+            if len(parts) >= 4 and parts[1] == 'wifi' and parts[2] == 'connected':
+                interface = parts[0]
+                ssid = parts[3]
+                return interface, ssid
+
+        return None, None
+

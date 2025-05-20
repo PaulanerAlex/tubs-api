@@ -1,6 +1,9 @@
 import json
 import config.config as cnf
 
+def init_globals(path):
+    pass # TODO: implement
+
 class ConfigHandler:
     
     def __init__(self, path=None, communication:bool=False):
@@ -20,7 +23,7 @@ class ConfigHandler:
     def _get_content(self):
         with open(self.path) as file:
             return(json.loads(file))
-    
+
     def get_com_encoding(self, input_key):
         '''
         returns the controller specific communication encoding for a given input key
@@ -40,14 +43,31 @@ class ConfigHandler:
         '''
         returns the wifi config parameters
         '''
-        map = self._get_content()['connection']
+        try:
+            map = self._get_content()['connection']
+        except KeyError:
+            raise KeyError('No connection config found in config file')
 
         if map['type'] == 'wifi':
             ssid = map['ssid']
             password = map['password']
-            return ssid, password
+            interface = map['interface']
+            return ssid, password, interface
         else:
             raise ValueError('No wifi config found in config file')
+        
+    def get_vehicle_config(self): # TODO: write wrapper for all functions
+        '''
+        returns the vehicle config parameters
+        '''
+        try:
+            map = self._get_content()['vehicle']
+        except KeyError:
+            raise KeyError('No vehicle config found in config file')
+        
+        vehicle_type = map['vehicle_type']
+        name = map['name']
+        return vehicle_type, name
 
     # TODO: write function to change config
         

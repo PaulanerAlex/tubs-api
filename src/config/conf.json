@@ -1,6 +1,11 @@
 {
+    "vehicle" : {
+        "type" : "car",
+        "name" : "clara"
+    },
     "connection" : {
         "type" : "wifi",
+        "interface" : "wlan0",
         "ssid" : "",
         "password" : ""
     },

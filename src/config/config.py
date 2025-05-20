@@ -2,13 +2,15 @@
 
 import pathlib as pl
 import os
+from tools.config_handler import ConfigHandler
 
 DEBUG_MODE = False
 HEADLESS_MODE = False
 IS_RC = os.path.exists(pl.Path('src', 'is_rc.txt'))
 IS_VEHICLE = os.path.exists(pl.Path('src', 'is_vehicle.txt'))
 SRC_PATH = pl.Path('src', 'rc') if IS_RC else pl.Path('src', 'vehicle')
-COMMUNICATION_KEY = 'com'
+COMMUNICATION_KEY = None # gets later declared
+RUNTIME_VARS = {}
 
 if IS_RC:
     CONF_JSON_PATH = pl.Path('src', 'config', 'config.json')

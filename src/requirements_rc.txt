@@ -1,1 +1,2 @@
 eclipse-zenoh==1.3.4
+luma.oled==3.14.0

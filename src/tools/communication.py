@@ -2,6 +2,7 @@ import zenoh
 from config.config import IS_RC, COMMUNICATION_KEY
 from tools.messenger import Messenger
 from multiprocessing import Pipe
+from tools.config_handler import ConfigHandler
 import threading
 
 class Communication:
@@ -20,7 +21,11 @@ class Communication:
 
         self.pub = self.session.declare_publisher(str(self.key) + f'/{pub_ending}')
         self.sub = self.session.declare_subscriber(str(self.key) + f'/{sub_ending}', self.listener_callback)
-        self.msgr = Messenger('com') # name will not be shown in the communication messages
+        
+        if not COMMUNICATION_KEY:
+            type, COMMUNICATION_KEY = ConfigHandler().get_vehicle_config() # TODO: refactor, so that every config value gets imported at init and by ConfigHandler
+        
+        self.msgr = Messenger(COMMUNICATION_KEY) # name will not be shown in the communication messages
         self.mp_connect_sub = mp_connect_sub
         self.mp_connect_pub = mp_connect_pub
 
