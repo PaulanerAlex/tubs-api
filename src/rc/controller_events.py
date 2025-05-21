@@ -61,7 +61,7 @@ class ControllerEvents:
         # TODO: add support for two state buttons
         return synced, ev_dict
 
-    def event_loop(self, mp_connect):
+    def event_loop(self):
         '''
         the event loop for controller events. Sends the events to the mp_connect pipe.
         '''
@@ -77,7 +77,7 @@ class ControllerEvents:
                 continue
             if ev_dict.__len__() > 0:
                 print(ev_dict)
-                mp_connect.send(ev_dict)
+                self.mp_connect.send(ev_dict)
             else:
                 print("No event received") # TODO: handle no event received
 
