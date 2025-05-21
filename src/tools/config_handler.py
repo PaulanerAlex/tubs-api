@@ -65,7 +65,7 @@ class ConfigHandler:
         except KeyError:
             raise KeyError('No vehicle config found in config file')
         
-        vehicle_type = conf_map['vehicle_type']
+        vehicle_type = conf_map['type']
         name = conf_map['name']
         return vehicle_type, name
 
