@@ -1,5 +1,5 @@
 import zenoh
-from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICL, DEBUG_MODE
+from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICLE, DEBUG_MODE
 from tools.messenger import Messenger
 from multiprocessing import Pipe
 from tools.config_handler import ConfigHandler
