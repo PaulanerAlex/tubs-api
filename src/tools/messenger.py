@@ -9,7 +9,7 @@ class Messenger:
         self.head_def = ['DO', 'SET', 'GET', 'LOG']
 
     def format_message(self, head: int, status: int, time: datetime, message: str, log: bool = False, *args, **kwargs):
-        """
+        '''
         Format the message in format:
         `[head][status][name][time][arg1]...[argN][key1=value1]...[keyN=valueN] body`
         The message has has a header and a body.
@@ -32,7 +32,7 @@ class Messenger:
         - 2: `WARNING`
         - 3: `ERROR`
         - 4: `CRITICAL`
-        """
+        '''
 
         # TODO: find schema for telemetry message
 
@@ -76,9 +76,9 @@ class Messenger:
         return message
 
     def parse_message(self, message: str, log: bool = False):
-        """
+        '''
         Parses the message and gives every argument in the header and the message as seperate values.
-        """
+        '''
 
         message = message.split(']')
         args = []
@@ -126,7 +126,28 @@ class Messenger:
                 args.append(char)
         
         return head, status, name, timestamp, args, kwargs, message_body
-    
+
     def parse_log_message(self, message: str):
         # TODO: implement
         pass
+
+    def parse_commands_sim(self, **kwargs):
+        
+        command_dict = {}
+        
+        if 'acc' in kwargs.keys():
+            amount = kwargs['acc']
+            command_dict['accelerate'] = amount / 100
+        if 'dcc' in kwargs.keys():
+            amount = kwargs['dcc']
+            command_dict['brake'] = amount / 100
+        if 'str' in kwargs.keys():
+            amount = kwargs['str']
+            if amount > 0:
+                command_dict['steer_left'] = amount / 10
+            elif amount < 0:
+                command_dict['steer_right'] = -amount / 10
+
+        # TODO: add support for buttons
+
+        return command_dict    

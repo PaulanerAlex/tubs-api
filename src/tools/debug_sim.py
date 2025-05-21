@@ -2,8 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.animation import FuncAnimation
-from multiprocessing import Process, Pipe
-import time
 
 class CarSimulation:
     def __init__(self, pipe_conn, 
@@ -95,8 +93,6 @@ class CarSimulation:
         direction = np.array([np.cos(self.car_angle), np.sin(self.car_angle)])
         self.car_pos += direction * self.car_speed
         self.car_angle == np.arctan(direction[1] / direction[0])
-
-
 
         # Update arrow
         self.car_arrow.set_positions(

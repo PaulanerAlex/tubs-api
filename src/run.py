@@ -8,8 +8,8 @@ if IS_VEHICLE:
 
 if __name__ == "__main__":
     # TODO: add initialization code for connection establishment etc
-    init()
-    start_proc()
+    init() # runs once
+    start_proc() # runs continously
 
 # TODO: check if on_vehicle or on_rc exists, and if not create the files (user did not use the setup script) before getting global vars from config.py
 

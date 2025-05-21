@@ -1,12 +1,12 @@
 import zenoh
-from config.config import IS_RC, COMMUNICATION_KEY
+from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICL, DEBUG_MODE
 from tools.messenger import Messenger
 from multiprocessing import Pipe
 from tools.config_handler import ConfigHandler
-import threading
+from functools import partial
 
 class Communication:
-    def __init__(self, key: str = '', mp_connect_sub = None, mp_connect_pub = None):
+    def __init__(self, key: str = '', mp_connect_sub = None, mp_connect_pub = None, listener_func=None):
         self.key = key
         self.session = zenoh.open(zenoh.Config())
         
@@ -19,9 +19,16 @@ class Communication:
             pub_ending = 'to_rc'
             sub_ending = 'to_veh'
 
+        global IS_VEHICLE, DEBUG_MODE
+
         self.pub = self.session.declare_publisher(str(self.key) + f'/{pub_ending}')
-        self.sub = self.session.declare_subscriber(str(self.key) + f'/{sub_ending}', self.listener_callback)
-        
+        if IS_VEHICLE and DEBUG_MODE:
+            self.sub = self.session.declare_subscriber(str(self.key) + f'/{sub_ending}', self.listener_callback_sim)
+        else:
+            self.sub = self.session.declare_subscriber(str(self.key) + f'/{sub_ending}', partial(self.listener_callback, func=listener_func))
+
+        global COMMUNICATION_KEY
+
         if not COMMUNICATION_KEY:
             type, COMMUNICATION_KEY = ConfigHandler().get_vehicle_config() # TODO: refactor, so that every config value gets imported at init and by ConfigHandler
         
@@ -54,7 +61,29 @@ class Communication:
             # TODO: log error
             return False
         
-    def listener_callback(self, sample: zenoh.Sample):
+    def listener_callback(self, sample: zenoh.Sample, func=None):
+        '''
+        Callback function for the subscriber. Runs the function passed as argument
+        '''
+        msg = sample.payload.to_string()
+        (
+        head,
+        status,
+        name,
+        timestamp,
+        args,
+        kwargs,
+        message_body
+        ) = self.msgr.parse_message(msg)
+
+        if func:
+            func(head=head, status=status, name=name, timestamp=timestamp, args=args, kwargs=kwargs, message_body=message_body)
+
+
+    def listener_callback_sim(self, sample: zenoh.Sample):
+        '''
+        Callback function for the subscriber. Parses the 'command' message and passes the arguments to the simulation pipe.
+        '''
         msg = sample.payload.to_string()
         (
         head,
@@ -68,6 +97,6 @@ class Communication:
 
         if self.mp_connect_sub is not None:
             # TODO: parse config
-            print(f'msg received: {msg}')
-            self.mp_connect_sub.send({'accelerate' : 0.1 / 100})
-        # TODO finish implementing
+            # print(f'msg received: {msg}')
+            commands = self.msgr.parse_commands_sim(kwargs)
+            self.mp_connect_sub.send(commands)
