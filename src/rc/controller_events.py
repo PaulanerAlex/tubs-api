@@ -48,7 +48,6 @@ class ControllerEvents:
             return False, {'unplugged': True}
         ev_dict = {}
         synced = True # TODO: check if this is reasonable
-        print('events:' + str(events.__len__()))
         for event in events:
             if event.ev_type == 'Sync':
                 synced = True
@@ -90,7 +89,6 @@ class ControllerEvents:
                 unplugged = False
 
             if ev_dict.__len__() > 0:
-                print(ev_dict)
                 self.mp_connect.send(ev_dict)
             
             cnt += 1
