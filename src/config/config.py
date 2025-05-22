@@ -16,11 +16,15 @@ if IS_RC:
     CONF_JSON_PATH = ROOT_PATH.joinpath('config', 'conf.json')
 if IS_VEHICLE:
     # cooses the alphabetically first config in src/config but can be changed in settings later
-    conf_files = os.listdir(ROOT_PATH.joinpath('config'))
+    files = os.listdir(ROOT_PATH.joinpath('config'))
     # remove conf.py from json config files
-    for conf_file in conf_files:
-        if not conf_file.__contains__('.json'):
-            conf_files.remove(conf_file)
+    conf_files = []
+    for file in files:
+        if file.__contains__('.json'):
+            conf_files.append(file)
     conf_files = sorted(conf_files)
+
+    if conf_files.__len__() == 0:
+        raise FileNotFoundError('No config files found in config folder')
 
     CONF_JSON_PATH = ROOT_PATH.joinpath('config', conf_files[0])
