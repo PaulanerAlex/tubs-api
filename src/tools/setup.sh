@@ -2,6 +2,8 @@
 
 REPO_LINK="https://github.com/PaulanerAlex/tubs-api.git"
 REPO_FOLDER_NAME="tubs-api"
+SERVICE_NAME="tubs-api.service"
+SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 
 # prompt user for setup type
 read -p "Setup for remote controller or vehicle? (Enter 'rc' or 've'): " SETUP_TYPE
@@ -56,7 +58,30 @@ elif [[ "$SETUP_TYPE" == "ve" ]]; then
     pip install -r requirements.txt # TODO: change to uv, pip crashes on rpi zero 2w most certainly because of the low memory
 fi
 
-# TODO: setup auto run on startup
+# go back to the beginning
+cd ../..
 
-# start entry point
-python3 run.py
+# Create systemd service file for running the app as a daemon
+cat <<EOF | sudo tee $SERVICE_PATH > /dev/null
+[Unit]
+Description=Tubs API Service
+After=network.target
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$(pwd)/$REPO_FOLDER_NAME/src
+ExecStart=$(pwd)/$REPO_FOLDER_NAME/env/bin/python3 $(pwd)/$REPO_FOLDER_NAME/src/run.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd, enable and start the service
+sudo systemctl daemon-reload
+sudo systemctl enable $SERVICE_NAME
+sudo systemctl start $SERVICE_NAME
+
+echo "Service $SERVICE_NAME has been created and started."
+echo "Setup completed successfully."
