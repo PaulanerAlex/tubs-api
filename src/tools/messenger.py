@@ -42,7 +42,7 @@ class Messenger:
         # add head to header # FIXME: there cold be a boolian error here
         if not log:
             head = f'[{self.head_def[head]}]'
-            kwargs.pop('log')
+            kwargs.pop('log', None)
             name = ''
         else:
             head = ''
@@ -53,8 +53,11 @@ class Messenger:
         else:
             status = ''
 
-        # TODO: add timestamp
-        timestamp = f'[{time.strftime("%Y%m%dT%H%M%S")}]'
+        # TODO: add timestamp before sending to be as exact as possible
+        if time:
+            timestamp = f'[{time.strftime("%Y%m%dT%H%M%S")}]'
+        else:
+            timestamp = f'[{datetime.now().strftime("%Y%m%dT%H%M%S")}]'
 
         # construct header
         header = f'{head}{status}{name}{timestamp}'
@@ -65,7 +68,7 @@ class Messenger:
 
         if kwargs:
             for key, value in kwargs.items():
-                if any(key in s for s in ['[', ']', '=']) or any(value in s for s in ['[', ']', '=']):
+                if any(str(key) in s for s in ['[', ']', '=']) or any(str(value) in s for s in ['[', ']', '=']):
                     raise ValueError('Keyword argument should not contain \'=\'')
                 header.__add__(f'[{str(key).upper()}={str(value)}]')
         

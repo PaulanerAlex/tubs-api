@@ -21,11 +21,17 @@ class Communication:
 
         global IS_VEHICLE, DEBUG_MODE
 
-        self.pub = self.session.declare_publisher(str(self.key) + f'/{pub_ending}')
+        pub_topic = str(self.key) + f'/{pub_ending}'
+        sub_topic = str(self.key) + f'/{sub_ending}'
+
+        print(f'pub topic: {pub_topic}')
+        print(f'sub topic: {sub_topic}')
+
+        self.pub = self.session.declare_publisher(pub_topic)
         if IS_VEHICLE and DEBUG_MODE:
-            self.sub = self.session.declare_subscriber(str(self.key) + f'/{sub_ending}', self.listener_callback_sim)
+            self.sub = self.session.declare_subscriber(sub_topic, self.listener_callback_sim)
         else:
-            self.sub = self.session.declare_subscriber(str(self.key) + f'/{sub_ending}', partial(self.listener_callback, func=listener_func))
+            self.sub = self.session.declare_subscriber(sub_topic, partial(self.listener_callback, func=listener_func))
 
         global COMMUNICATION_KEY
 
@@ -44,10 +50,14 @@ class Communication:
             if self.mp_connect_pub.poll(1):
                 msg = self.mp_connect_pub.recv()
 
-                print(f'communication message for sending befor formatting: {msg}')
+                print(f'communication message for sending before formatting: {msg}')
+                
+                time = msg.get('time')
+                if time:
+                    msg = msg.pop('time') 
 
                 msg = dict(msg) # validate message, if not valid, it raises an error                    
-                msg = self.msgr.format_message(0, -1, msg.get('time'), '', log=False, **msg.pop('time'))
+                msg = self.msgr.format_message(0, -1, time, '', log=False, msg=msg)
 
                 print(f'communication msg after formatting: {msg}')
 

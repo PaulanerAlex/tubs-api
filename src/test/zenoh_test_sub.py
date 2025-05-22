@@ -5,5 +5,5 @@ def listener(sample):
 
 if __name__ == "__main__":
     with zenoh.open(zenoh.Config()) as session:
-        sub = session.declare_subscriber('clara/from_remote', listener)
+        sub = session.declare_subscriber('clara/to_veh', listener)
         time.sleep(60)

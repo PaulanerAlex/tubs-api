@@ -2,6 +2,7 @@
 
 import pathlib as pl
 import os
+from tools.config_handler import ConfigHandler
 
 ROOT_PATH = pl.Path(__file__).parent.parent
 DEBUG_MODE = False
@@ -9,7 +10,6 @@ HEADLESS_MODE = False
 IS_RC = os.path.exists(ROOT_PATH.joinpath('is_rc.txt'))
 IS_VEHICLE = os.path.exists(ROOT_PATH.joinpath('is_vehicle.txt'))
 SRC_PATH = ROOT_PATH.joinpath('rc') if IS_RC else ROOT_PATH.joinpath('vehicle')
-COMMUNICATION_KEY = None # gets later declared
 RUNTIME_VARS = {}
 
 if IS_RC:
@@ -28,3 +28,5 @@ if IS_VEHICLE:
         raise FileNotFoundError('No config files found in config folder')
 
     CONF_JSON_PATH = ROOT_PATH.joinpath('config', conf_files[0])
+
+VEH_TYPE, COMMUNICATION_KEY = ConfigHandler.init_globals(CONF_JSON_PATH) # gets later declared

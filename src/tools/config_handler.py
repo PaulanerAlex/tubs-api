@@ -1,8 +1,4 @@
 import json
-import config.config as cnf
-
-def init_globals(path):
-    pass # TODO: implement
 
 class ConfigHandler:
     
@@ -11,6 +7,7 @@ class ConfigHandler:
         uses path from config, if path not provided
         '''
         if not path:
+            import config.config as cnf # to prevent circular import
             self.path = cnf.CONF_JSON_PATH
         else:
             self.path = path
@@ -18,12 +15,19 @@ class ConfigHandler:
         if communication:
             self.com_map = self._get_content['communication']['encoding']
             self.com_norm_map = self._get_content['communication']['encoding_norm']
-   
+
+    @classmethod
+    def init_globals(cls, path):
+        '''
+        initializes the global variables
+        '''
+        return cls(path).get_vehicle_config()
+        
     @property
     def _get_content(self):
         with open(self.path) as file:
             return(json.load(file))
-
+            
     def get_com_encoding(self, input_key):
         '''
         returns the controller specific communication encoding for a given input key
