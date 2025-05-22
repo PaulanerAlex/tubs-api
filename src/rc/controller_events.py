@@ -9,7 +9,7 @@ _STICK_MAX = 2**16 - 1
 class ControllerEvents:
     def __init__(self, mp_connect=None):
         self.mp_connect = mp_connect
-        self.cnf = ConfigHandler()
+        self.cnf = ConfigHandler(communication=True)
 
     def loop_until_event(self, event_type=None):
         """
