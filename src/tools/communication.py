@@ -41,8 +41,8 @@ class Communication:
         Loop to keep the process alive and handle incoming messages. Use in own thread / process.
         """
         while True:
-            if self.mp_connect_sub.poll(1):
-                msg = self.mp_connect_sub.recv()
+            if self.mp_connect_pub.poll(1):
+                msg = self.mp_connect_pub.recv()
 
                 print(f'communication message for sending befor formatting: {msg}')
 

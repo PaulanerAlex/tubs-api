@@ -9,6 +9,8 @@ def start_com_process(mp_connect_sub, mp_connect_pub):
     Start the communication process.
     """
 
+    print("Starting communication process...")
+
     Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
 
     # Keep the process alive by waiting for the connection to close
