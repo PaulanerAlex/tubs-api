@@ -19,7 +19,7 @@ if IS_VEHICLE:
     conf_files = os.listdir(ROOT_PATH.joinpath('config'))
     # remove conf.py from json config files
     for conf_file in conf_files:
-        if conf_file[-3:] == '.py':
+        if not conf_file.__contains__('.json'):
             conf_files.remove(conf_file)
     conf_files = sorted(conf_files)
 
