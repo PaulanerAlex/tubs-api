@@ -15,18 +15,42 @@ def network_init():
         net.connect_to_network()
 
 class NetworkHandler:
-    def __init__(self, *args, **kwargs):
-        self.password = kwargs['password']
-        self.interface = kwargs['interface']
-        self.ssid = kwargs['ssid']
+    def __init__(self, password=None, ssid=None, interface=None):
+        self.password = password
+        self.interface = interface
+        self.ssid = ssid
 
+        # when interface is set to 'auto' in config
+        if not interface:
+            self.interface = self.get_current_interface()
+
+    def get_current_interface(self):
+        """
+        Get the current network interface (using ip link command)
+        Returns None if something goes wrong.
+        """
+
+        # Get the current network interface prefix using 'ip link'
+        ip_link_output = cmd("ip link show")
+        if not ip_link_output:
+            return None
+        # Find the first non-loopback interface
+        interface_prefix = None
+        for line in ip_link_output.split('\n'):
+            if ": " in line and not line.strip().startswith("lo:"):
+                interface_prefix = line.split(":")[1].strip().split('@')[0]
+                break
+
+        return interface_prefix
+    
     def get_available_networks(self):
         """
         Get the available networks (using iwlist command)
         Returns None if something goes wrong.
         """
-        command = """sudo iwlist wlp2s0 scan | grep -ioE 'ssid:"(.*{}.*)'"""
-        result = cmd(command.format(self.ssid))
+        
+        command = """sudo {} wlp2s0 scan | grep -ioE 'ssid:"(.*{}.*)'"""
+        result = cmd(command.format(self.interface, self.ssid))
 
         if not result:
             # TODO: change following to logger
@@ -73,4 +97,3 @@ class NetworkHandler:
                 return interface, ssid
 
         return None, None
-

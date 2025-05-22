@@ -52,6 +52,8 @@ class ConfigHandler:
             ssid = conf_map['ssid']
             password = conf_map['password']
             interface = conf_map['interface']
+            if interface == 'auto':
+                interface = None
             return ssid, password, interface
         else:
             raise ValueError('No wifi config found in config file')
