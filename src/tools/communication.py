@@ -44,8 +44,12 @@ class Communication:
             if self.mp_connect_sub.poll(1):
                 msg = self.mp_connect_sub.recv()
 
+                print(f'communication message for sending befor formatting: {msg}')
+
                 msg = dict(msg) # validate message, if not valid, it raises an error                    
                 msg = self.msgr.format_message(0, -1, msg.get('time'), '', log=False, **msg.pop('time'))
+
+                print(f'communication msg after formatting: {msg}')
 
                 self.publish_com_msg(msg)
 
@@ -56,6 +60,7 @@ class Communication:
         
         try:
             self.pub.put(msg)
+            print('communication message sent.')
             return True
         except Exception as e:
             # TODO: log error
