@@ -80,6 +80,7 @@ class ControllerEvents:
             if ev_dict.__len__() > 0:
                 print(ev_dict)
                 self.mp_connect.send(ev_dict)
+                print("sent event to pipe")
 
 if __name__ == "__main__":
     ControllerEvents().loop_until_event()
