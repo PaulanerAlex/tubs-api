@@ -22,6 +22,8 @@ class ControllerEvents:
             status = False
             if not synced:
                 return status, ev_dict
+            if ev_dict.__len__() == 0:
+                continue
             if not event_type:
                 if ev_dict.get('unplugged'):
                     raise UnpluggedError
@@ -29,7 +31,7 @@ class ControllerEvents:
                 return status, ev_dict
             if event_type in ev_dict.keys():
                 status = True
-                return ev_dict
+                return status, ev_dict
 
     def get_controller_event(self):
         '''
@@ -78,8 +80,6 @@ class ControllerEvents:
             if ev_dict.__len__() > 0:
                 print(ev_dict)
                 self.mp_connect.send(ev_dict)
-            else:
-                print("No event received") # TODO: handle no event received
 
 if __name__ == "__main__":
     ControllerEvents().loop_until_event()
