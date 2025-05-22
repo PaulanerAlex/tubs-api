@@ -50,8 +50,6 @@ class Communication:
             if self.mp_connect_pub.poll(1):
                 msg = self.mp_connect_pub.recv()
 
-                print(f'communication message for sending before formatting: {msg}')
-                
                 time = msg.get('time')
                 if time:
                     msg = msg.pop('time') 
@@ -70,7 +68,6 @@ class Communication:
         
         try:
             self.pub.put(msg)
-            print('communication message sent.')
             return True
         except Exception as e:
             # TODO: log error
