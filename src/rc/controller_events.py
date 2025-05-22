@@ -44,8 +44,7 @@ class ControllerEvents:
         '''
         try:
             events = get_gamepad()
-        except events.UnpluggedError:
-            print("Controller unplugged")
+        except UnpluggedError:
             return False, {'unplugged': True}
         ev_dict = {}
         synced = True # TODO: check if this is reasonable
@@ -67,20 +66,36 @@ class ControllerEvents:
         '''
         the event loop for controller events. Sends the events to the mp_connect pipe.
         '''
+        cnt = 0
+        unplugged = False
         while True:
-            try:
-                status, ev_dict = self.loop_until_event()
-            except UnpluggedError:
-                print("Controller unplugged") # TODO: handle unplugged event
-                continue
+            status, ev_dict = self.loop_until_event()
             
+            # display unplugged message if unplugged
             if not status:
-                print("something went wrong") # TODO: handle other problems
-                continue
+                if ev_dict.get('unplugged') == True and not unplugged: # to display only once
+                    # TODO: change to logger
+                    print(f"controller unplugged")
+                    unplugged = True
+                    continue
+
+                if unplugged:
+                    continue
+                
+                print('something went wrong') # TODO: change to logger
+
+            if unplugged and status:
+                print(f"controller plugged in")
+                unplugged = False
+
             if ev_dict.__len__() > 0:
                 print(ev_dict)
                 self.mp_connect.send(ev_dict)
                 print("sent event to pipe")
+            
+            cnt += 1
+
+
 
 if __name__ == "__main__":
     ControllerEvents().loop_until_event()
