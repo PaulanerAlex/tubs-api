@@ -18,6 +18,7 @@ fi
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
+# FIXME: shoud only check if it is setup for rc
 # check if the system is Raspberry Pi OS 32-bit
 if [[ "$(uname -m)" == "armv7l" && -f /etc/os-release && "$(grep 'Raspbian' /etc/os-release)" ]]; then
     echo "detected System is Raspberry Pi OS 32-bit."

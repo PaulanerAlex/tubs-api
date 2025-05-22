@@ -7,8 +7,8 @@ from tools.config_handler import ConfigHandler
 ROOT_PATH = pl.Path(__file__).parent.parent
 DEBUG_MODE = False
 HEADLESS_MODE = False
-IS_RC = os.path.exists(ROOT_PATH.joinpath('is_rc.txt'))
-IS_VEHICLE = os.path.exists(ROOT_PATH.joinpath('is_vehicle.txt'))
+IS_RC = os.path.exists(ROOT_PATH.joinpath('on_rc.txt'))
+IS_VEHICLE = os.path.exists(ROOT_PATH.joinpath('on_vehicle.txt'))
 SRC_PATH = ROOT_PATH.joinpath('rc') if IS_RC else ROOT_PATH.joinpath('vehicle')
 RUNTIME_VARS = {}
 
