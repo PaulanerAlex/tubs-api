@@ -57,7 +57,7 @@ class Communication:
                     msg = msg.pop('time') 
 
                 msg = dict(msg) # validate message, if not valid, it raises an error                    
-                msg = self.msgr.format_message(0, -1, time, '', log=False, msg=msg)
+                msg = self.msgr.format_message(0, -1, time, '', log=False, **msg)
 
                 print(f'communication msg after formatting: {msg}')
 
