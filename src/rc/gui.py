@@ -33,7 +33,7 @@ class GUI:
         dcc = 0
         steer = 0
         while True:
-            if mp_connect.poll():
+            if mp_connect.poll(1):
                 data = mp_connect.recv()
                 acc = data.get('acc', acc)
                 dcc = data.get('dcc', dcc)
@@ -44,7 +44,7 @@ class GUI:
                     acc = data['acc']
                     self.display_data_screen_car(0 + acc - dcc, steer, {'bat': '3.2V', 'mod':'man', 'st':'ok'})
             else:
-                self.display_text('Waiting for data...')
+                self.display_text('Waiting for data...') # TODO: change this...
 
     @_screen_prep
     def display_text(self, text, position=None, font=None):
