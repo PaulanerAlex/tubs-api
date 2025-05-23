@@ -22,9 +22,24 @@ class GUI:
         self.display = ssd1306(serial)
         self.height = self.display.height
         self.width = self.display.width
+        
+    def gui_loop(self):
+        """
+        main loop to refresh the screen.
+        """
+        while True:
+            # if RUNTIME_VARS['gui']['mode'] == 'homescreen':
+            #     self.display_homescreen()
+            # else:
+            #     self.display_text('RC Mode')
+            self.display_homescreen()
+
 
     @_screen_prep
     def display_text(self, text, position=(0, 0), font=None):
+        """
+        Display text on the screen.
+        """
         image = Image.new("1", (self.width, self.height))
         draw = ImageDraw.Draw(image)
         if font is None:
@@ -34,6 +49,9 @@ class GUI:
 
     @_screen_prep
     def display_menu(self, options, font=None, selected_index=0):
+        """
+        Display a menu on the screen.
+        """
         image = Image.new("1", (self.width, self.height))
         draw = ImageDraw.Draw(image)
         
@@ -55,10 +73,64 @@ class GUI:
         return image
     
     @_screen_prep
-    def display_homescreen(self):
-        if RUNTIME_VARS['on_vehicle']:
-            text = "Vehicle Mode"
+    def display_homescreen_car(self):
+        """
+        Display the home screen with vehicle mode and other information.
+        """
+        pass
+
+    @_screen_prep
+    def data_view_screen(self, accel: float, steer: float, vals: dict):
+        '''
+        Displays a widget with a circle and a dot representing the steering and acceleration values
+        and some additional values.
+        '''
+        image = Image.new("1", (self.width, self.height), 0)
+        draw = ImageDraw.Draw(image)
+
+        # Circle properties
+        radius = min(self.width, self.height) // 2 - 4
+        center_x = self.width // 4
+        center_y = self.height // 2
+
+        # Draw circle
+        draw.ellipse([
+            (center_x - radius, center_y - radius),
+            (center_x + radius, center_y + radius)
+        ], outline=1)
+
+        # Clamp steering and acceleration to [-1.0, 1.0]
+        steering = max(-1.0, min(1.0, steer))
+        acceleration = max(-1.0, min(1.0, accel))
+
+        # Compute dot position
+        dot_x = center_x + int(steering * radius)
+        dot_y = center_y - int(acceleration * radius)  # y-axis is inverted
+
+        # Draw dot
+        dot_radius = 2
+        draw.ellipse([
+            (dot_x - dot_radius, dot_y - dot_radius),
+            (dot_x + dot_radius, dot_y + dot_radius)
+        ], fill=1)
+
+        pos = 0
+        for key, value in vals.items():
+            draw.text((self.width * 0.55, pos), f"{str(key)}:{str(value)}", fill=1)
+            pos += self.height / 6
+        return image
+    
+    @_screen_prep
+    def display_image(self, path):
+        """
+        Display an image on the screen. Should be 1-bit and 128x64.
+        """
+        return Image.open(path).convert("1")
 
 if __name__ == "__main__":
     gui = GUI()
-    gui.display_text('Test', (50, 50))
+    while True:
+        # in_1 = input('> ')
+        # in_2 = input('> ')
+        # gui.data_view_screen(float(in_1), float(in_2), {'bat': '3.2V', 'mod':'man', 'st':'ok'})
+        gui.display_image('assets/images/connecting_screen.png')
