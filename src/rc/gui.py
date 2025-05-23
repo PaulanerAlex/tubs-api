@@ -33,7 +33,7 @@ class GUI:
         dcc = 0
         steer = 0
         while True:
-            if mp_connect.poll(1):
+            if mp_connect.poll():
                 data = mp_connect.recv()
                 acc = data.get('acc', acc)
                 dcc = data.get('dcc', dcc)
