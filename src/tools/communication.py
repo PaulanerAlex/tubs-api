@@ -71,7 +71,6 @@ class Communication:
         """
         Publish a communication message to the specified key.
         """ 
-        
         try:
             self.pub.put(msg)
             return True

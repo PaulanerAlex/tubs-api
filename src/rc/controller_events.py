@@ -7,8 +7,9 @@ _TRIGGER_MAX = 2**8 - 1
 _STICK_MAX = 2**16 - 1
 
 class ControllerEvents:
-    def __init__(self, mp_connect=None):
-        self.mp_connect = mp_connect
+    def __init__(self, mp_connect_com=None, mp_connect_gui=None):
+        self.mp_connect_com = mp_connect_com
+        self.mp_connect_gui = mp_connect_gui
         self.cnf = ConfigHandler(communication=True)
 
     def loop_until_event(self, event_type=None):
@@ -89,7 +90,8 @@ class ControllerEvents:
                 unplugged = False
 
             if ev_dict.__len__() > 0:
-                self.mp_connect.send(ev_dict)
+                self.mp_connect_com.send(ev_dict)
+                self.mp_connect_gui.send(ev_dict)
             
             cnt += 1
 

@@ -1,7 +1,6 @@
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
-from config.config import RUNTIME_VARS
 
 def _screen_prep(func):
     """
@@ -9,7 +8,8 @@ def _screen_prep(func):
     """
     def wrapper(*args, **kwargs):
         self = args[0]
-        self.display.clear()
+        if self.redraw:
+            self.display.clear()
         output = func(*args, **kwargs)
         self.display.display(output)
         return output
@@ -22,28 +22,44 @@ class GUI:
         self.display = ssd1306(serial)
         self.height = self.display.height
         self.width = self.display.width
+        self.redraw = False
         
-    def gui_loop(self):
+    def gui_proc_loop_car(self, mp_connect):
         """
         main loop to refresh the screen.
         """
+        self.display.clear()
+        acc = 0
+        dcc = 0
+        steer = 0
         while True:
-            # if RUNTIME_VARS['gui']['mode'] == 'homescreen':
-            #     self.display_homescreen()
-            # else:
-            #     self.display_text('RC Mode')
-            self.display_homescreen()
-
+            if mp_connect.poll():
+                data = mp_connect.recv()
+                acc = data.get('acc', acc)
+                dcc = data.get('dcc', dcc)
+                steer = data.get('str', steer)
+                if data.get('unplugged') == True: # FIXME: this has to be implemented in the other process
+                    self.display_text('Controller unplugged')
+                else:
+                    acc = data['acc']
+                    self.display_data_screen_car(0 + acc - dcc, steer, {'bat': '3.2V', 'mod':'man', 'st':'ok'})
+            else:
+                self.display_text('Waiting for data...')
 
     @_screen_prep
-    def display_text(self, text, position=(0, 0), font=None):
+    def display_text(self, text, position=None, font=None):
         """
-        Display text on the screen.
+        Display text on the screen. If position is None, center the text.
         """
         image = Image.new("1", (self.width, self.height))
         draw = ImageDraw.Draw(image)
-        if font is None:
+        if not font:
             font = ImageFont.load_default()
+        if not position:
+            text_width, text_height = draw.textsize(text, font=font)
+            x = (self.width - text_width) // 2
+            y = (self.height - text_height) // 2
+            position = (x, y)
         draw.text(position, text, font=font, fill=255)
         return image
 
@@ -71,16 +87,9 @@ class GUI:
             else:
                 draw.text((2, y), option, font=font, fill=255)
         return image
-    
-    @_screen_prep
-    def display_homescreen_car(self):
-        """
-        Display the home screen with vehicle mode and other information.
-        """
-        pass
 
     @_screen_prep
-    def data_view_screen(self, accel: float, steer: float, vals: dict):
+    def display_data_screen_car(self, accel: float, steer: float, vals: dict):
         '''
         Displays a widget with a circle and a dot representing the steering and acceleration values
         and some additional values.
@@ -119,7 +128,7 @@ class GUI:
             draw.text((self.width * 0.55, pos), f"{str(key)}:{str(value)}", fill=1)
             pos += self.height / 6
         return image
-    
+
     @_screen_prep
     def display_image(self, path):
         """
@@ -130,7 +139,6 @@ class GUI:
 if __name__ == "__main__":
     gui = GUI()
     while True:
-        # in_1 = input('> ')
-        # in_2 = input('> ')
-        # gui.data_view_screen(float(in_1), float(in_2), {'bat': '3.2V', 'mod':'man', 'st':'ok'})
-        gui.display_image('assets/connecting_screen.png')
+        in_1 = input('> ')
+        in_2 = input('> ')
+        gui.display_data_screen_car(float(in_1), float(in_2), {'bat': '3.2V', 'mod':'man', 'st':'ok'})
