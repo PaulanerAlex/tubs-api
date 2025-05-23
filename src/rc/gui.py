@@ -133,4 +133,4 @@ if __name__ == "__main__":
         # in_1 = input('> ')
         # in_2 = input('> ')
         # gui.data_view_screen(float(in_1), float(in_2), {'bat': '3.2V', 'mod':'man', 'st':'ok'})
-        gui.display_image('assets/images/connecting_screen.png')
+        gui.display_image('assets/connecting_screen.png')
