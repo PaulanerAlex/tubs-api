@@ -52,11 +52,17 @@ class GUI:
         Display text on the screen. If position is None, center the text.
         """
         image = Image.new("1", (self.width, self.height))
-        draw = ImageDraw.Draw(image)
+        draw = ImageDraw.Draw(image)    
         if not font:
             font = ImageFont.load_default()
         if not position:
-            text_width, text_height = font.getsize(text) # TODO: add automatic line break
+            # Use font.getbbox for Pillow >=8.0.0, fallback to getsize for older versions
+            try:
+                bbox = font.getbbox(text)
+                text_width = bbox[2] - bbox[0]
+                text_height = bbox[3] - bbox[1]
+            except AttributeError:
+                text_width, text_height = font.getsize(text)
             x = (self.width - text_width) // 2
             y = (self.height - text_height) // 2
             position = (x, y)
@@ -69,12 +75,16 @@ class GUI:
         Display a menu on the screen.
         """
         image = Image.new("1", (self.width, self.height))
+        try:
+            bbox = font.getbbox("A")
+            line_height = (bbox[3] - bbox[1]) + 2
+        except AttributeError:
+            line_height = font.getsize("A")[1] + 2
         draw = ImageDraw.Draw(image)
         
         if font is None:
             font = ImageFont.load_default()
 
-        line_height = font.getsize("A")[1] + 2
         max_lines = self.height // line_height
         start_index = max(0, selected_index - max_lines // 2)
         visible_options = options[start_index:start_index + max_lines]
