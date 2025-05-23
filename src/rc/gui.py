@@ -56,7 +56,7 @@ class GUI:
         if not font:
             font = ImageFont.load_default()
         if not position:
-            text_width, text_height = draw.textsize(text, font=font)
+            text_width, text_height = font.getsize(text) # TODO: add automatic line break
             x = (self.width - text_width) // 2
             y = (self.height - text_height) // 2
             position = (x, y)

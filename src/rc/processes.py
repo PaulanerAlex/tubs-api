@@ -1,7 +1,7 @@
 from multiprocessing import Process, Pipe
 from rc.controller_events import ControllerEvents
 from tools.communication import Communication
-from config.config import COMMUNICATION_KEY
+from config.config import COMMUNICATION_KEY, HEADLESS_MODE
 import time
 from rc.gui import GUI
 
@@ -23,9 +23,10 @@ def start_proc():
 
     input = ControllerEvents(mp_connect_com=parent_conn_pub, mp_connect_gui=parent_conn_gui)
 
-    # gui process
-    gui_proc = Process(target=GUI().gui_proc_loop_car, args=(child_conn_gui,))
-    gui_proc.start()
+    if not HEADLESS_MODE:
+        # gui process
+        gui_proc = Process(target=GUI().gui_proc_loop_car, args=(child_conn_gui,))
+        gui_proc.start()
 
     # communication process
     com_proc = Process(target=start_com_process, args=(child_conn_sub, child_conn_pub))
