@@ -20,7 +20,7 @@ class GUI:
     def __init__(self, i2c_port=1, i2c_address=0x3C): # TODO: add global var for i2c adress that is collected dynamically
         serial = i2c(port=i2c_port, address=i2c_address)
         self.display = ssd1306(serial)
-        self.heigth = self.display.height
+        self.height = self.display.height
         self.width = self.display.width
 
     @_screen_prep
