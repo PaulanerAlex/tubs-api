@@ -64,6 +64,8 @@ class CarSimulation:
         # Read commands from Pipe (non-blocking)
         while self.pipe_conn.poll():
             cmd_dict = self.pipe_conn.recv()
+            if cmd_dict.__len__() == 0:
+                continue
             command, val = list(cmd_dict.items())[0]  # Get the command and value
             if command == 'accelerate':
                 self.accelerate(val)

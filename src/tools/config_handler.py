@@ -21,7 +21,8 @@ class ConfigHandler:
         '''
         initializes the global variables
         '''
-        return cls(path).get_vehicle_config()
+        cls_obj = cls(path)
+        return *cls_obj.get_vehicle_config(), *cls_obj.get_program_config() 
         
     @property
     def _get_content(self):
@@ -74,6 +75,20 @@ class ConfigHandler:
         vehicle_type = conf_map['type']
         name = conf_map['name']
         return vehicle_type, name
+
+    def get_program_config(self):
+        '''
+        returns the program config parameters
+        '''
+        try:
+            conf_map = self._get_content['program']
+        except KeyError:
+            raise KeyError('No program config found in config file')
+        
+        debug_mode = conf_map['debug']
+        headless_mode = conf_map['headless']
+        
+        return debug_mode, headless_mode
 
     # TODO: write function to change config
         

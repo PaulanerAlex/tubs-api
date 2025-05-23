@@ -4,6 +4,7 @@ from tools.messenger import Messenger
 from multiprocessing import Pipe
 from tools.config_handler import ConfigHandler
 from functools import partial
+import time
 
 class Communication:
     def __init__(self, key: str = '', mp_connect_sub = None, mp_connect_pub = None, listener_func=None):
@@ -23,9 +24,6 @@ class Communication:
 
         pub_topic = str(self.key) + f'/{pub_ending}'
         sub_topic = str(self.key) + f'/{sub_ending}'
-
-        print(f'pub topic: {pub_topic}')
-        print(f'sub topic: {sub_topic}')
 
         self.pub = self.session.declare_publisher(pub_topic)
         if IS_VEHICLE and DEBUG_MODE:
@@ -60,6 +58,14 @@ class Communication:
                 print(f'communication msg after formatting: {msg}')
 
                 self.publish_com_msg(msg)
+
+    def sub_loop(self):
+        '''
+        Keeps process alive.
+        Incoming messages are handled in the listener_callback function.
+        '''
+        while True:
+            time.sleep(0.001) # TODO: find a better solution to keep the process alive
 
     def publish_com_msg(self, msg: str):
         """

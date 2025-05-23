@@ -11,22 +11,8 @@ def start_com_process(mp_connect_sub, mp_connect_pub):
     Start the communication process.
     """
 
-    Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
-
-    # Keep the process alive by waiting for the connection to close
-    # This will block until the other end of the Pipe is closed
-    try:
-        while True:
-            time.sleep(0.001)  # Sleep briefly to avoid busy waiting
-            # if mp_connect_pub.poll(1):
-                # msg = conn.recv()
-                # TODO: check if this is efficient like this
-                # TODO: improve this whole function
-                # TODO: definetely change this
-                # Optionally handle messages from the main process here
-                # threading.Event().wait(0.001) # Sleep briefly to avoid busy waiting
-    except (EOFError, KeyboardInterrupt):
-        pass
+    com = Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
+    com.sub_loop()
 
 def debug_control_process(conn): # for controlling without wireless connection
     

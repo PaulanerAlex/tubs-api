@@ -4,6 +4,7 @@ REPO_LINK="https://github.com/PaulanerAlex/tubs-api.git"
 REPO_FOLDER_NAME="tubs-api"
 SERVICE_NAME="tubs-api.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
+USER=$(whoami)
 
 # prompt user for setup type
 read -p "Setup for remote controller or vehicle? (Enter 'rc' or 've'): " SETUP_TYPE
@@ -18,9 +19,8 @@ fi
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
-# FIXME: shoud only check if it is setup for rc
 # check if the system is Raspberry Pi OS 32-bit
-if [[ "$(uname -m)" == "armv7l" && -f /etc/os-release && "$(grep 'Raspbian' /etc/os-release)" ]]; then
+if [[ "$(uname -m)" == "armv7l" && -f /etc/os-release && "$(grep 'Raspbian' /etc/os-release)" && "$SETUP_TYPE" == "rc"]]; then
     echo "detected System is Raspberry Pi OS 32-bit."
 else
     echo "ERROR: detected System is not Raspberry Pi OS 32-bit."
@@ -59,11 +59,16 @@ elif [[ "$SETUP_TYPE" == "ve" ]]; then
     pip install -r requirements.txt # TODO: change to uv, pip crashes on rpi zero 2w most certainly because of the low memory
 fi
 
+
+# TODO: enable i2c driver https://luma-oled.readthedocs.io/en/latest/hardware.html#i2c
+sudo usermod -a -G i2c $USER
+sudo apt-get install i2c-tools
+
 # go back to the beginning
 cd ../..
 
 # Create systemd service file for running the app as a daemon
-cat <<EOF | sudo tee $SERVICE_PATH > /dev/null
+cat <<EOF | sudo tee $SERVICE_PATH > /dev/null  
 [Unit]
 Description=Tubs API Service
 After=network.target
@@ -85,4 +90,9 @@ sudo systemctl enable $SERVICE_NAME
 sudo systemctl start $SERVICE_NAME
 
 echo "Service $SERVICE_NAME has been created and started."
-echo "Setup completed successfully."
+echo "Setup completed successfully. Rebooting the system..."
+
+# Reboot the system
+sudo reboot now
+
+

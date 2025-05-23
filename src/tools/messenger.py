@@ -109,7 +109,7 @@ class Messenger:
             name = header_formatted[i]
             i += 1
 
-        timestamp = datetime.strptime(header_formatted[i], "%Y%m%dT%H%M")
+        timestamp = datetime.strptime(header_formatted[i], "%Y%m%dT%H%M%S")
         
         for ii in range(0, i):
             header_formatted.pop(ii) # remove the header fields except the args and kwargs
@@ -134,22 +134,22 @@ class Messenger:
         # TODO: implement
         pass
 
-    def parse_commands_sim(self, **kwargs):
+    def parse_commands_sim(self, kwargs):
         
         command_dict = {}
         
-        if 'acc' in kwargs.keys():
-            amount = kwargs['acc']
-            command_dict['accelerate'] = amount / 100
-        if 'dcc' in kwargs.keys():
-            amount = kwargs['dcc']
-            command_dict['brake'] = amount / 100
-        if 'str' in kwargs.keys():
-            amount = kwargs['str']
-            if amount > 0:
-                command_dict['steer_left'] = amount / 10
-            elif amount < 0:
-                command_dict['steer_right'] = -amount / 10
+        if 'ACC' in kwargs.keys():
+            amount = float(kwargs['ACC'])
+            command_dict['accelerate'] = amount / 10
+        if 'DCC' in kwargs.keys():
+            amount = float(kwargs['DCC'])
+            command_dict['brake'] = amount / 10
+        if 'STR' in kwargs.keys():
+            amount = float(kwargs['STR'])
+            if amount < 0:
+                command_dict['steer_left'] = amount * 10
+            elif amount > 0:
+                command_dict['steer_right'] = amount * 10
 
         # TODO: add support for buttons
 

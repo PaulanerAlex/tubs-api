@@ -13,6 +13,7 @@ def _screen_prep(func):
         output = func(*args, **kwargs)
         self.display.display(output)
         return output
+    return wrapper
 
 
 class GUI:
