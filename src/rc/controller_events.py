@@ -56,10 +56,10 @@ class ControllerEvents:
                     ev_dict_gui[code_gui] = event.state
                 except KeyError:
                     continue
-                
-                ev_dict_gui.update(ev_dict)
 
-        # TODO: add support for two state buttons
+        if not HEADLESS_MODE:
+            ev_dict_gui.update(ev_dict)    
+
         return True, ev_dict, ev_dict_gui
 
     def event_loop(self):

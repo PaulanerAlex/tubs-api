@@ -59,8 +59,6 @@ class GUI:
                     self.display_menu()
                 else:
                     self.display_data_screen_car(0 + acc - dcc, steer, {'bat': '3.2V', 'mod':'man', 'st':'ok'})
-            else:
-                self.display_text('Waiting for data...') # TODO: change this...
 
     def display_options_menu(self):
         '''
