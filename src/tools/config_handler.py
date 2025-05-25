@@ -33,16 +33,31 @@ class ConfigHandler:
         '''
         returns the controller specific communication encoding for a given input key
         '''
-        
-        com_map = self._get_content['communication']['encoding'] if not self.com_map else self.com_map
-        com_norm_map = self._get_content['communication']['encoding_norm'] if not self.com_norm_map else self.com_norm_map
-
+        try:
+            com_map = self._get_content['communication']['encoding'] if not self.com_map else self.com_map
+            com_norm_map = self._get_content['communication']['encoding_norm'] if not self.com_norm_map else self.com_norm_map
+        except KeyError:
+            raise NotImplementedError('communication config or some of the fields not found in config file')
         # TODO: add support for buttons
         if input_key in com_map.keys():
             norm_val = com_norm_map[input_key] if input_key in com_norm_map.keys() else None
             return com_map[input_key], norm_val 
         else:
             raise KeyError(f'Key {input_key} not found in communication encoding dictionary')        
+
+    def get_gui_encoding(self, input_key):
+        '''
+        returns the gui specific encoding for a given input key
+        '''
+        try:
+            gui_map = self._get_content['gui']['encoding']
+        except KeyError:
+            raise NotImplementedError('gui or some of the fields not config found in config file')
+
+        if input_key in gui_map.keys():
+            return gui_map[input_key]
+        else:
+            raise KeyError(f'Key {input_key} not found in gui encoding dictionary')
 
     def get_wifi_config(self):
         '''

@@ -1,4 +1,4 @@
-from multiprocessing import Process, Pipe
+from multiprocessing import Process, Pipe, Queue
 from rc.controller_events import ControllerEvents
 from tools.communication import Communication
 from config.config import COMMUNICATION_KEY, HEADLESS_MODE
@@ -18,18 +18,18 @@ def start_com_process(mp_connect_sub, mp_connect_pub):
 
 def start_proc():
     child_conn_pub, parent_conn_pub = Pipe()
-    child_conn_sub, parent_conn_sub = Pipe()
+    conn_sub = Queue()
     child_conn_gui, parent_conn_gui = Pipe()
 
     input = ControllerEvents(mp_connect_com=parent_conn_pub, mp_connect_gui=parent_conn_gui)
 
     if not HEADLESS_MODE:
         # gui process
-        gui_proc = Process(target=GUI().gui_proc_loop_car, args=(child_conn_gui,))
+        gui_proc = Process(target=GUI().gui_proc_loop_car, args=(child_conn_gui, conn_sub))
         gui_proc.start()
 
     # communication process
-    com_proc = Process(target=start_com_process, args=(child_conn_sub, child_conn_pub))
+    com_proc = Process(target=start_com_process, args=(conn_sub, child_conn_pub))
     com_proc.start()
 
     # input process in main process

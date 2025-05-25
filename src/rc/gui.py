@@ -1,6 +1,7 @@
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
+from config.config import VEH_TYPE
 
 def _screen_prep(func):
     """
@@ -21,18 +22,32 @@ class GUI:
         serial = i2c(port=i2c_port, address=i2c_address)
         self.display = ssd1306(serial)
         self.height = self.display.height
+        self.text_height = self.height / 6
         self.width = self.display.width
         self.redraw = False
-        
-    def gui_proc_loop_car(self, mp_connect):
+        self.menu_state = None
+        self.homescreen = 'data_screen_car' if VEH_TYPE is 'car' else ''
+        self.menu_options = {
+            'log_view' : self.display_com_msg_view,
+            'change network' : self.change_network,
+        }
+        self.mp_connect = None
+        self.mp_connect_com = None
+
+    def gui_proc_loop_car(self, mp_connect, mp_connect_com):
         """
         main loop to refresh the screen.
         """
+        self.mp_connect = mp_connect
+        self.mp_connect_com = mp_connect_com
         self.display.clear()
         acc = 0
         dcc = 0
         steer = 0
+
         while True:
+            if not self.menu_state:
+                self.menu_state = self.homescreen
             if mp_connect.poll():
                 data = mp_connect.recv()
                 acc = data.get('acc', acc)
@@ -40,8 +55,9 @@ class GUI:
                 steer = data.get('str', steer)
                 if data.get('unplugged') == True: # FIXME: this has to be implemented in the other process
                     self.display_text('Controller unplugged')
+                if data.get('menu'):
+                    self.display_menu()
                 else:
-                    acc = data['acc']
                     self.display_data_screen_car(0 + acc - dcc, steer, {'bat': '3.2V', 'mod':'man', 'st':'ok'})
             else:
                 self.display_text('Waiting for data...') # TODO: change this...
@@ -68,6 +84,91 @@ class GUI:
             position = (x, y)
         draw.text(position, text, font=font, fill=255)
         return image
+
+    def display_options_menu(self):
+        '''
+        Displays the options available from the data view screen,
+        name in the button encodings should be 'menu'
+        '''
+        selected_index = 0
+        
+        def __add_ind(ind):
+            return ind - 1 if ind > 0 else len(self.menu_options) - 1
+        
+        def __sub_ind(ind):
+            return ind + 1 if ind < len(self.menu_options) - 1 else 0
+        
+        while True:
+            print(self.mp_connect)
+
+            if self.mp_connect.poll():
+                data = self.mp_connect.recv()
+                for key, value in data.items():
+                    
+                    if key == 'gui_ud' and value > 0:
+                        selected_index = __add_ind(selected_index)
+                    elif key == 'gui_ud' and value < 0:
+                        selected_index = __sub_ind(selected_index)
+                    elif key == 'gui_du' and value > 0:
+                        selected_index = __add_ind(selected_index)
+                    elif key == 'gui_du' and value < 0:
+                        selected_index = __sub_ind(selected_index)
+
+                    if key == 'gui_select':
+                        self.menu_options[selected_index]() # call the function associated with the selected option
+            
+            return self.display_menu(self.menu_options, selected=selected_index)
+
+    def display_com_msg_view(self):
+        '''
+        Displays the communication message view screen.
+        '''
+        msgs = []
+        while True:
+            if self.mp_connect_com is not None:
+                msg = self.mp_connect_com.get()
+            else:
+                raise NotImplementedError('Communication message view not yet implemented for this GUI')
+
+            if not msg:
+                return self.display_text("No messages to display")
+            
+            msgs.append(msg['message_body'])
+
+            self.display_msg_view(msgs)
+
+    @_screen_prep
+    def display_msg_view(self, messages=None):
+        """
+        Displays the message view screen. Shows the last messages at the bottom.
+        """
+        if messages is None:
+            messages = []
+        if font is None:
+            font = ImageFont.load_default()
+
+        image = Image.new("1", (self.width, self.height))
+        draw = ImageDraw.Draw(image)
+
+        # Calculate line height
+        try:
+            bbox = font.getbbox("A")
+            line_height = (bbox[3] - bbox[1]) + 2
+        except AttributeError:
+            line_height = font.getsize("A")[1] + 2
+
+        max_lines = self.height // line_height
+        # Get the last max_lines messages
+        visible_msgs = messages[-max_lines:]
+
+        # Draw messages from bottom up
+        for i, msg in enumerate(reversed(visible_msgs)):
+            y = self.height - (i + 1) * line_height
+            draw.text((2, y), msg, font=font, fill=255)
+
+        return image
+
+        
 
     @_screen_prep
     def display_menu(self, options, font=None, selected_index=0):
@@ -136,7 +237,7 @@ class GUI:
         pos = 0
         for key, value in vals.items():
             draw.text((self.width * 0.55, pos), f"{str(key)}:{str(value)}", fill=1)
-            pos += self.height / 6
+            pos += self.text_height
         return image
 
     @_screen_prep

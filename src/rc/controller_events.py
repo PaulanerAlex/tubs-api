@@ -2,6 +2,7 @@ from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
 from inputs import UnpluggedError
+from config.config import HEADLESS_MODE
 
 _TRIGGER_MAX = 2**8 - 1
 _STICK_MAX = 2**16 - 1
@@ -48,11 +49,8 @@ class ControllerEvents:
         except UnpluggedError:
             return False, {'unplugged': True}
         ev_dict = {}
-        synced = True # TODO: check if this is reasonable
+        ev_dict_gui = {}
         for event in events:
-            if event.ev_type == 'Sync':
-                synced = True
-                continue
             try:
                 code, max_val = self.cnf.get_com_encoding(event.code)
                 ev_dict[code] = event.state / max_val if max_val else event.state
@@ -60,8 +58,14 @@ class ControllerEvents:
             except KeyError:
                 continue
 
+            try:
+                code_gui = self.cnf.get_gui_encoding(event.code)
+                ev_dict_gui[code_gui] = event.state
+            except KeyError:
+                continue
+
         # TODO: add support for two state buttons
-        return synced, ev_dict
+        return True, ev_dict, ev_dict_gui
 
     def event_loop(self):
         '''
@@ -70,13 +74,16 @@ class ControllerEvents:
         cnt = 0
         unplugged = False
         while True:
-            status, ev_dict = self.loop_until_event()
+            status, ev_dict, ev_dict_gui = self.loop_until_event()
             
             # display unplugged message if unplugged
             if not status:
                 if ev_dict.get('unplugged') == True and not unplugged: # to display only once
-                    # TODO: change to logger
-                    print(f"controller unplugged")
+                    # TODO: log this
+                    print('controller unplugged')
+                    self.mp_connect_com.send(ev_dict)
+                    if not HEADLESS_MODE:
+                        self.mp_connect_gui.send(ev_dict_gui)
                     unplugged = True
                     continue
 
@@ -91,11 +98,9 @@ class ControllerEvents:
 
             if ev_dict.__len__() > 0:
                 self.mp_connect_com.send(ev_dict)
-                self.mp_connect_gui.send(ev_dict)
-            
-            cnt += 1
 
-
+            if ev_dict_gui.__len__() > 0 and not HEADLESS_MODE:
+                self.mp_connect_gui.send(ev_dict_gui)
 
 if __name__ == "__main__":
     ControllerEvents().loop_until_event()

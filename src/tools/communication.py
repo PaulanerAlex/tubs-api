@@ -26,6 +26,7 @@ class Communication:
         sub_topic = str(self.key) + f'/{sub_ending}'
 
         self.pub = self.session.declare_publisher(pub_topic)
+        
         if IS_VEHICLE and DEBUG_MODE:
             self.sub = self.session.declare_subscriber(sub_topic, self.listener_callback_sim)
         else:
@@ -55,7 +56,7 @@ class Communication:
                 msg = dict(msg) # validate message, if not valid, it raises an error                    
                 msg = self.msgr.format_message(0, -1, time, '', log=False, **msg)
 
-                print(f'communication msg after formatting: {msg}')
+                print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
 
                 self.publish_com_msg(msg)
 
@@ -93,9 +94,24 @@ class Communication:
         message_body
         ) = self.msgr.parse_message(msg)
 
+        if self.mp_connect_sub:
+            self.mp_connect_sub.put({
+                'head': head,
+                'status': status,
+                'name': name,
+                'timestamp': timestamp,
+                'args': args,
+                'kwargs': kwargs,
+                'message_body': message_body,
+                'encoded': msg
+            })
+            return True
+
         if func:
             func(head=head, status=status, name=name, timestamp=timestamp, args=args, kwargs=kwargs, message_body=message_body)
+            return True
 
+        raise NotImplementedError('No function or queue passed to listener_callback. Please pass a function or queue that handles the message or that messages can be send to.')
 
     def listener_callback_sim(self, sample: zenoh.Sample):
         '''
