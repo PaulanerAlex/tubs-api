@@ -48,7 +48,7 @@ class ControllerEvents:
                 ev_dict[code] = event.state / max_val if max_val else event.state
                 # TODO: add timestamp
             except KeyError:
-                continue
+                pass
             
             if not HEADLESS_MODE:
                 try:
