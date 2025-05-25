@@ -62,29 +62,6 @@ class GUI:
             else:
                 self.display_text('Waiting for data...') # TODO: change this...
 
-    @_screen_prep
-    def display_text(self, text, position=None, font=None):
-        """
-        Display text on the screen. If position is None, center the text.
-        """
-        image = Image.new("1", (self.width, self.height))
-        draw = ImageDraw.Draw(image)    
-        if not font:
-            font = ImageFont.load_default()
-        if not position:
-            # Use font.getbbox for Pillow >=8.0.0, fallback to getsize for older versions
-            try:
-                bbox = font.getbbox(text)
-                text_width = bbox[2] - bbox[0]
-                text_height = bbox[3] - bbox[1]
-            except AttributeError:
-                text_width, text_height = font.getsize(text)
-            x = (self.width - text_width) // 2
-            y = (self.height - text_height) // 2
-            position = (x, y)
-        draw.text(position, text, font=font, fill=255)
-        return image
-
     def display_options_menu(self):
         '''
         Displays the options available from the data view screen,
@@ -136,6 +113,35 @@ class GUI:
             msgs.append(msg['message_body'])
 
             self.display_msg_view(msgs)
+
+    def change_network(self):
+        """
+        Change the network settings.
+        """
+        pass
+
+    @_screen_prep
+    def display_text(self, text, position=None, font=None):
+        """
+        Display text on the screen. If position is None, center the text.
+        """
+        image = Image.new("1", (self.width, self.height))
+        draw = ImageDraw.Draw(image)    
+        if not font:
+            font = ImageFont.load_default()
+        if not position:
+            # Use font.getbbox for Pillow >=8.0.0, fallback to getsize for older versions
+            try:
+                bbox = font.getbbox(text)
+                text_width = bbox[2] - bbox[0]
+                text_height = bbox[3] - bbox[1]
+            except AttributeError:
+                text_width, text_height = font.getsize(text)
+            x = (self.width - text_width) // 2
+            y = (self.height - text_height) // 2
+            position = (x, y)
+        draw.text(position, text, font=font, fill=255)
+        return image
 
     @_screen_prep
     def display_msg_view(self, messages=None):
