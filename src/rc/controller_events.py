@@ -39,7 +39,7 @@ class ControllerEvents:
         try:
             events = get_gamepad()
         except UnpluggedError:
-            return False, {'unplugged': True}
+            return False, {'unplugged': True}, {}
         ev_dict = {}
         ev_dict_gui = {}
         for event in events:
