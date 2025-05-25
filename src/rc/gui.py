@@ -48,8 +48,12 @@ class GUI:
         while True:
             if not self.menu_state:
                 self.menu_state = self.homescreen
-            if mp_connect.poll():
-                data = mp_connect.recv()
+            # Drain the queue to get the latest message
+            latest_data = None
+            while mp_connect.poll():
+                latest_data = mp_connect.recv()
+            if latest_data:
+                data = latest_data
                 acc = data.get('acc', acc)
                 dcc = data.get('dcc', dcc)
                 steer = data.get('str', steer)
