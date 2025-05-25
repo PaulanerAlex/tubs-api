@@ -49,12 +49,15 @@ class ControllerEvents:
                 # TODO: add timestamp
             except KeyError:
                 continue
-
-            try:
-                code_gui = self.cnf.get_gui_encoding(event.code)
-                ev_dict_gui[code_gui] = event.state
-            except KeyError:
-                continue
+            
+            if not HEADLESS_MODE:
+                try:
+                    code_gui = self.cnf.get_gui_encoding(event.code)
+                    ev_dict_gui[code_gui] = event.state
+                except KeyError:
+                    continue
+                
+                ev_dict_gui.update(ev_dict)
 
         # TODO: add support for two state buttons
         return True, ev_dict, ev_dict_gui
