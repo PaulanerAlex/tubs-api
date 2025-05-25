@@ -26,7 +26,7 @@ class GUI:
         self.width = self.display.width
         self.redraw = False
         self.menu_state = None
-        self.homescreen = 'data_screen_car' if VEH_TYPE is 'car' else ''
+        self.homescreen = 'data_screen_car' if VEH_TYPE == 'car' else ''
         self.menu_options = {
             'log_view' : self.display_com_msg_view,
             'change network' : self.change_network,
@@ -167,8 +167,6 @@ class GUI:
             draw.text((2, y), msg, font=font, fill=255)
 
         return image
-
-        
 
     @_screen_prep
     def display_menu(self, options, font=None, selected_index=0):
