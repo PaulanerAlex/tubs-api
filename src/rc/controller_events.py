@@ -13,27 +13,19 @@ class ControllerEvents:
         self.mp_connect_gui = mp_connect_gui
         self.cnf = ConfigHandler(communication=True)
 
-    def loop_until_event(self, event_type=None):
+    def loop_until_event(self):
         """
         Loop until an event is received from the controller.
         Should be called in an own process.
         Returns the status and the event dictionary.
         """
         while True:
-            synced, ev_dict = self.get_controller_event()
-            status = False
-            if not synced:
-                return status, ev_dict
+            synced, ev_dict, ev_dict_gui = self.get_controller_event()
             if ev_dict.__len__() == 0:
                 continue
-            if not event_type:
-                if ev_dict.get('unplugged'):
-                    raise UnpluggedError
-                status = True
-                return status, ev_dict
-            if event_type in ev_dict.keys():
-                status = True
-                return status, ev_dict
+            if ev_dict.get('unplugged'):
+                raise UnpluggedError
+            return synced, ev_dict, ev_dict_gui
 
     def get_controller_event(self):
         '''
@@ -71,7 +63,6 @@ class ControllerEvents:
         '''
         the event loop for controller events. Sends the events to the mp_connect pipe.
         '''
-        cnt = 0
         unplugged = False
         while True:
             status, ev_dict, ev_dict_gui = self.loop_until_event()
