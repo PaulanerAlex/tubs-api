@@ -1,5 +1,5 @@
 from tools.network import network_init
-from config.config import HEADLESS_MODE
+from config.config import HEADLESS_MODE, CONNECTING_SCREEN_PATH
 import time
 import datetime
 
@@ -15,7 +15,7 @@ def _init_headless():
 def _init_standard():
     from rc.gui import GUI
     gui = GUI()
-    gui.display_image('assets/connecting_screen.png')
+    gui.display_image(CONNECTING_SCREEN_PATH)
     now = datetime.datetime.now()
     try:
         network_init()

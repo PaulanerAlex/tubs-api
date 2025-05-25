@@ -12,6 +12,7 @@ RUNTIME_VARS = {}
 
 if IS_RC:
     CONF_JSON_PATH = ROOT_PATH.joinpath('config', 'conf.json')
+    CONNECTING_SCEEN_PATH = ROOT_PATH.joinpath('assets', 'connecting_screen.png')
 if IS_VEHICLE:
     # cooses the alphabetically first config in src/config but can be changed in settings later
     files = os.listdir(ROOT_PATH.joinpath('config'))
