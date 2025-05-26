@@ -95,7 +95,7 @@ class GUI:
                         selected_index = __sub_ind(selected_index)
 
                     if key == 'gui_select':
-                        list(self.menu_options.keys())[selected_index]() # call the function associated with the selected option
+                        list(self.menu_options.values())[selected_index]() # call the function associated with the selected option
 
                     if key == 'gui_back':
                         self.menu_state = None
