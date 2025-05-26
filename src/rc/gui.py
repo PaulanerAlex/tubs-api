@@ -115,6 +115,7 @@ class GUI:
 
             msg = self.mp_connect_com.get()
 
+            latest_data = None
             while self.mp_connect.poll():
                 latest_data = self.mp_connect.recv()
 
