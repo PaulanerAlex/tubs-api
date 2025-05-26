@@ -160,12 +160,13 @@ class GUI:
         return image
 
     @_screen_prep
-    def display_msg_view(self, messages=None):
+    def display_msg_view(self, messages=None, font=None):
         """
         Displays the message view screen. Shows the last messages at the bottom.
         """
         if messages is None:
             messages = []
+            
         if font is None:
             font = ImageFont.load_default()
 
