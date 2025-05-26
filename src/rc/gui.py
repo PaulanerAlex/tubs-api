@@ -1,7 +1,7 @@
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
-from config.config import VEH_TYPE
+from config.config import VEH_TYPE, DEBUG_MODE
 
 def _screen_prep(func):
     """
@@ -107,6 +107,8 @@ class GUI:
         '''
         Displays the communication message view screen.
         '''
+        if DEBUG_MODE:
+            from tools.messenger import Messenger as msgr
         msgs = []
         while True:
             if self.mp_connect_com is None or self.mp_connect is None:
@@ -124,8 +126,12 @@ class GUI:
             if not msg:
                 return self.display_text("No messages to display")
             print(f'msg {msg}')
-            msgs.append(msg['message_body'])
-
+            
+            if not DEBUG_MODE:
+                msgs.append(msg['message_body'])
+            else:
+                head, status, name, timestamp, args, kwargs, message_body = msgr().parse_message(msg, log=False)
+                msgs.append(kwargs)
             self.display_msg_view(msgs)
 
     def change_network(self):
