@@ -177,7 +177,7 @@ class GUI:
         return image
 
     @_screen_prep
-    def display_menu(self, options, font=None, selected_index=0):
+    def display_menu(self, options, font=None, selected=0):
         """
         Display a menu on the screen.
         """
@@ -193,12 +193,12 @@ class GUI:
             font = ImageFont.load_default()
 
         max_lines = self.height // line_height
-        start_index = max(0, selected_index - max_lines // 2)
+        start_index = max(0, selected - max_lines // 2)
         visible_options = options[start_index:start_index + max_lines]
 
         for i, option in enumerate(visible_options):
             y = i * line_height
-            if start_index + i == selected_index:
+            if start_index + i == selected:
                 draw.rectangle((0, y, self.width, y + line_height), outline=255, fill=255)
                 draw.text((2, y), option, font=font, fill=0)
             else:
