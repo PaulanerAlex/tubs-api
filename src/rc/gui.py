@@ -107,7 +107,6 @@ class GUI:
         '''
         Displays the communication message view screen.
         '''
-        print('Displaying communication message view')
         msgs = []
         while True:
             if self.mp_connect_com is None or self.mp_connect is None:
@@ -124,7 +123,7 @@ class GUI:
 
             if not msg:
                 return self.display_text("No messages to display")
-            
+            print(f'msg {msg}')
             msgs.append(msg['message_body'])
 
             self.display_msg_view(msgs)
