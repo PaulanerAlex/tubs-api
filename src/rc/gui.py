@@ -96,7 +96,7 @@ class GUI:
                     if key == 'gui_select':
                         self.menu_options[selected_index]() # call the function associated with the selected option
             
-            self.display_menu(self.menu_options.keys(), selected=selected_index)
+            self.display_menu(list(self.menu_options.keys()), selected=selected_index)
 
     def display_com_msg_view(self):
         '''
