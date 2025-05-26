@@ -21,8 +21,6 @@ class ControllerEvents:
         """
         while True:
             synced, ev_dict, ev_dict_gui = self.get_controller_event()
-            if ev_dict.__len__() == 0:
-                continue
             if ev_dict.get('unplugged'):
                 raise UnpluggedError
             return synced, ev_dict, ev_dict_gui
