@@ -107,12 +107,19 @@ class GUI:
         '''
         Displays the communication message view screen.
         '''
+        print('Displaying communication message view')
         msgs = []
         while True:
-            if self.mp_connect_com is not None:
-                msg = self.mp_connect_com.get()
-            else:
-                raise NotImplementedError('Communication message view not yet implemented for this GUI')
+            if self.mp_connect_com is None or self.mp_connect is None:
+                raise NotImplementedError('Something went wrong, mp_connect_com or mp_connect is None')
+
+            msg = self.mp_connect_com.get()
+
+            while self.mp_connect.poll():
+                latest_data = self.mp_connect.recv()
+
+            if latest_data and latest_data.get('gui_back'):
+                return
 
             if not msg:
                 return self.display_text("No messages to display")

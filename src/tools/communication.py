@@ -29,6 +29,8 @@ class Communication:
         
         if IS_VEHICLE and DEBUG_MODE:
             self.sub = self.session.declare_subscriber(sub_topic, self.listener_callback_sim)
+        elif IS_RC and DEBUG_MODE: # for debugging, incoming messages will be outgoing messages
+            self.sub = None
         else:
             self.sub = self.session.declare_subscriber(sub_topic, partial(self.listener_callback, func=listener_func))
 
@@ -57,6 +59,12 @@ class Communication:
                 msg = self.msgr.format_message(0, -1, time, '', log=False, **msg)
 
                 print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
+
+                if DEBUG_MODE: # for debugging, pipe the send to the incoming messages
+                    if self.mp_connect_sub:
+                        self.mp_connect_sub.put(msg)
+                    else:
+                        print(f'communication message received: {msg}')
 
                 self.publish_com_msg(msg)
 
