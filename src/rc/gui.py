@@ -60,6 +60,7 @@ class GUI:
                 if data.get('unplugged') == True: # FIXME: this has to be implemented in the other process
                     self.display_text('Controller unplugged')
                 if data.get('gui_menu'):
+                    self.menu_state = 'options_menu'
                     self.display_options_menu()
                 else:
                     self.display_data_screen_car(0 + acc - dcc, steer, {'bat': '3.2V', 'mod':'man', 'st':'ok'})
@@ -94,8 +95,12 @@ class GUI:
                         selected_index = __sub_ind(selected_index)
 
                     if key == 'gui_select':
-                        self.menu_options[selected_index]() # call the function associated with the selected option
-            
+                        list(self.menu_options.keys())[selected_index]() # call the function associated with the selected option
+
+                    if key == 'gui_back':
+                        self.menu_state = None
+                        return
+
             self.display_menu(list(self.menu_options.keys()), selected=selected_index)
 
     def display_com_msg_view(self):
