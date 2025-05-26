@@ -28,7 +28,7 @@ class GUI:
         self.menu_state = None
         self.homescreen = 'data_screen_car' if VEH_TYPE == 'car' else ''
         self.menu_options = {
-            'log_view' : self.display_com_msg_view,
+            'log view' : self.display_com_msg_view,
             'change network' : self.change_network,
         }
         self.mp_connect = None
@@ -96,7 +96,7 @@ class GUI:
                     if key == 'gui_select':
                         self.menu_options[selected_index]() # call the function associated with the selected option
             
-            self.display_menu(self.menu_options, selected=selected_index)
+            self.display_menu(self.menu_options.keys(), selected=selected_index)
 
     def display_com_msg_view(self):
         '''
