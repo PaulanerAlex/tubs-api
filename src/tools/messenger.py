@@ -73,6 +73,12 @@ class Messenger:
 
         message = f'{header}{message}'
 
+        if log and not status == 1:
+            print(message)
+        elif log and status == 1:
+            if DEBUG_MODE:
+                print(message)
+
         return message
 
     def parse_message(self, message: str, log: bool = False):

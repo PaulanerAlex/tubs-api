@@ -29,7 +29,7 @@ class GUI:
         self.homescreen = 'data_screen_car' if VEH_TYPE == 'car' else ''
         self.menu_options = {
             'log view' : self.display_com_msg_view,
-            'change network' : self.change_network,
+            'change config file' : self.change_config,
         }
         self.mp_connect = None
         self.mp_connect_com = None
@@ -133,12 +133,13 @@ class GUI:
                 head, status, name, timestamp, args, kwargs, message_body = msgr(name='').parse_message(msg, log=False)
                 msgs.append(kwargs)
             self.display_msg_view(msgs)
-
-    def change_network(self):
-        """
-        Change the network settings.
-        """
+    
+    def change_config(self):
+        '''
+        Change the config file, on which the system is parameterized.
+        '''
         pass
+
 
     @_screen_prep
     def display_text(self, text, position=None, font=None):

@@ -3,7 +3,7 @@ if IS_RC:
     from rc.entrypoint import init
     from rc.processes import start_proc
 if IS_VEHICLE:
-    from rc.entrypoint import init
+    from vehicle.entrypoint import init
     from vehicle.processes import start_proc
 
 if __name__ == "__main__":
