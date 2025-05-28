@@ -57,4 +57,4 @@ class Timer:
         """Return the average refresh rate based on the last intervals."""
         if not self.last_intervals:
             return 0
-        return sum(self.last_intervals[-self.interval_resolution:]) / len(self.last_intervals[-self.interval_resolution:])
+        return sum(self.last_intervals) / len(self.last_intervals)
