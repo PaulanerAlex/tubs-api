@@ -5,6 +5,7 @@ from multiprocessing import Pipe
 from tools.config_handler import ConfigHandler
 from functools import partial
 import time
+from tools.timers import Timer
 
 class Communication:
     def __init__(self, key: str = '', mp_connect_sub = None, mp_connect_pub = None, listener_func=None):
@@ -47,6 +48,7 @@ class Communication:
         """
         Loop to keep the process alive and handle incoming messages. Use in own thread / process.
         """
+        tm = Timer(start=True)
         while True:
             if self.mp_connect_pub.poll(1):
                 msg = self.mp_connect_pub.recv()
@@ -71,7 +73,13 @@ class Communication:
                     else:
                         print(f'communication message received: {msg}') # TODO: change to logger
 
+                if self.mp_connect_sub is not None: # send send frequency to gui
+                    tm.interval()
+                    self.mp_connect_sub.put({'gui_send_freq': tm.get_refresh_rate()})
+                
                 self.publish_com_msg(msg)
+
+
 
     def sub_loop(self):
         '''

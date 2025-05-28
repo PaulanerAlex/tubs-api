@@ -56,6 +56,8 @@ class GUI:
             latest_data = None
             while mp_connect.poll():
                 latest_data = mp_connect.recv()
+            if mp_connect_com.poll():
+                latest_data_com = mp_connect_com.recv()
             if latest_data:
                 data = latest_data
                 acc = data.get('acc', acc)
@@ -67,7 +69,9 @@ class GUI:
                     self.menu_state = 'options_menu'
                     self.display_options_menu()
                 else:
-                    self.display_data_screen_car(0 + acc - dcc, steer, {'bat': '3.2V', 'mod':'man', 'st':'ok'})
+                    if latest_data_com:
+                        freq = latest_data_com.get('gui_send_freq')
+                    self.display_data_screen_car(0 + acc - dcc, steer, {'snd_fq': freq.__round__(2) if freq else 'N/A', 'acc': acc, 'dcc': dcc, 'steer': steer})
 
     def display_options_menu(self):
         '''
@@ -165,7 +169,6 @@ class GUI:
                         return None
 
             self.display_menu(options, selected=selected_index)
-
 
     @_screen_prep
     def display_text(self, text, position=None, font=None):
