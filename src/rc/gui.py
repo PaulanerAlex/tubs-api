@@ -62,7 +62,7 @@ class GUI:
                 data_com = mp_connect_com.get()
             except Exception:
                 data_com = None
-                
+
             if latest_data:
                 data = latest_data
                 acc = data.get('acc', acc)
@@ -70,7 +70,7 @@ class GUI:
                 steer = data.get('str', steer)
                 if data.get('unplugged') == True: # FIXME: this has to be implemented in the other process
                     self.display_text('Controller unplugged')
-                if data.get('gui_menu'):
+                elif data.get('gui_menu'):
                     self.menu_state = 'options_menu'
                     self.display_options_menu()
                 else:
