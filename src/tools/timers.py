@@ -43,6 +43,8 @@ class Timer:
     
     def interval(self):
         """Return the time since the last interval."""
+        if self.start_interval is None:
+            self.elapsed()
         self.last_intervals.append(time.time() - self.start_time - self.start_interval)
         if len(self.last_intervals) > self.interval_resolution:
             self.last_intervals.pop(0)
