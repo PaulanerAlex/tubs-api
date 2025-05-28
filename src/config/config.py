@@ -33,4 +33,4 @@ CONF_JSON_PATH = ROOT_PATH.joinpath('config', conf_files[0])
 
 VEH_TYPE, COMMUNICATION_KEY, DEBUG_MODE, HEADLESS_MODE = ConfigHandler.init_globals(CONF_JSON_PATH) # gets later declared
 
-LOG_FILE_PATH = ROOT_PATH.joinpath('log', f'{VEH_TYPE.lower() if IS_VEHICLE else 'rc'}.log')
+LOG_FILE_PATH = ROOT_PATH.joinpath('log', f"{VEH_TYPE.lower() if IS_VEHICLE else 'rc'}.log")
