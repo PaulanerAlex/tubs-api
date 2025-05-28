@@ -49,6 +49,8 @@ class GUI:
         dcc = 0
         steer = 0
 
+        self.display_text('waiting for input...')
+
         while True:
             if not self.menu_state:
                 self.menu_state = self.homescreen
@@ -76,8 +78,10 @@ class GUI:
                 else:
                     if data_com:
                         freq = data_com.get('gui_send_freq')
+                    elif freq is None:
+                        freq = 0.0
                     self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq.__round__(2)}Hz' if freq else 'N/A', 'acc': acc, 'dcc': dcc, 'steer': steer})
-
+                
     def display_options_menu(self):
         '''
         Displays the options available from the data view screen,
