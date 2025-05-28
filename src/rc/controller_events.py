@@ -35,7 +35,7 @@ class ControllerEvents:
         try:
             events = get_gamepad()
         except UnpluggedError:
-            return False, {'unplugged': True}, {}
+            return False, {'unplugged': True}, {'unplugged': True}
         ev_dict = {}
         ev_dict_gui = {}
         for event in events:
@@ -75,7 +75,7 @@ class ControllerEvents:
                 if ev_dict.get('unplugged', False) == True and not unplugged: # to display only once
                     # TODO: log this
                     print('controller unplugged')
-                    self.mp_connect_com.send(ev_dict)
+                    
                     if not HEADLESS_MODE:
                         self.mp_connect_gui.send(ev_dict_gui)
                     unplugged = True
