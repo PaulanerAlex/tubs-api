@@ -1,16 +1,14 @@
 from multiprocessing import Process, Pipe, Queue
 from rc.controller_events import ControllerEvents
 from tools.communication import Communication
-from config.config import COMMUNICATION_KEY, HEADLESS_MODE
-import time
+from config.config import COMMUNICATION_KEY, HEADLESS_MODE, RUNTIME_VARS
 from rc.gui import GUI
+from tools.commander import restart_program
 
 def start_com_process(mp_connect_sub, mp_connect_pub):
     """
     Start the communication process.
     """
-
-    print("Starting communication process...")
 
     com = Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
 
@@ -32,8 +30,15 @@ def start_proc():
     com_proc = Process(target=start_com_process, args=(conn_sub, child_conn_pub))
     com_proc.start()
 
-    # input process in main process
+    # input process in main process until terminated by user in the gui
     input.event_loop()
 
-    # TODO: start gui process
-    # TODO: check if the pipe buffer will never be full, so the child process is faster
+    if not HEADLESS_MODE:
+        gui_proc.join()  # Wait for GUI process to finish
+    com_proc.join()  # Wait for communication process to finish
+
+    new_conf = RUNTIME_VARS.get('new_config', None) # TODO: implement in other process
+    if new_conf is not None:
+        new_conf = [new_conf]
+        restart_program(new_conf)
+    

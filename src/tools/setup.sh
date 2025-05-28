@@ -5,6 +5,9 @@ REPO_FOLDER_NAME="tubs-api"
 SERVICE_NAME="tubs-api.service"
 SERVICE_PATH="/etc/systemd/system/$SERVICE_NAME"
 USER=$(whoami)
+PYTHON_VERSION_REQUIRED="3.10"
+
+echo "This script will set up rc-remote on your System."
 
 # prompt user for setup type
 read -p "Setup for remote controller or vehicle? (Enter 'rc' or 've'): " SETUP_TYPE
@@ -30,12 +33,40 @@ fi
 # get latest os updates
 sudo apt update && sudo apt upgrade
 
-# install python, pip and venv
-sudo apt install python3 python3-pip python3-venv
-sudo apt install libjpeg-dev # required for pillow
+# check if python3 is installed and version > 3.10
+if ! command -v python3 &> /dev/null; then
+    echo "ERROR: python3 is not installed."
+    exit 1
+fi
+
+PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+if [[ "$(printf '%s\n' "$PYTHON_VERSION_REQUIRED" "$PYTHON_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]]; then
+    echo "ERROR: Python version must be greater than 3.10. Found $PYTHON_VERSION."
+    exit 1
+fi
+
+# check if git is installed
+if ! command -v git &> /dev/null; then
+    echo "ERROR: git is not installed."
+    exit 1
+fi
+
+read -p "Should this script now install standart python and git versions and try to work with them? (Enter 'y' or 'n' for yes or no): " INSTALL_STANDARD
+
+if [[ "$INSTALL_STANDARD" == "y" ]]; then
+    echo "Installing standard python and git versions..."
+    
+    # install python, pip, venv and git
+    sudo apt install python3 python3-pip python3-venv
+    sudo apt install libjpeg-dev # required for pillow
+
+    sudo apt install git
+else
+    echo "Skipping installation of standard python and git versions. Ending script."
+    exit 0
+fi
 
 # setup git repo
-sudo apt install git
 git clone $REPO_LINK
 # check if the repo was cloned successfully
 if [ $? -ne 0 ]; then

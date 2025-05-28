@@ -2,7 +2,7 @@ from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
 from inputs import UnpluggedError
-from config.config import HEADLESS_MODE
+from config.config import HEADLESS_MODE, TERMINATE
 
 _TRIGGER_MAX = 2**8 - 1
 _STICK_MAX = 2**16 - 1
@@ -66,6 +66,9 @@ class ControllerEvents:
         '''
         unplugged = False
         while True:
+            if TERMINATE:
+                return
+
             status, ev_dict, ev_dict_gui = self.loop_until_event()
             
             # display unplugged message if unplugged

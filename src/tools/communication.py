@@ -55,7 +55,12 @@ class Communication:
                 if time:
                     msg = msg.pop('time') 
 
-                msg = dict(msg) # validate message, if not valid, it raises an error                    
+                if msg.get('terminate'):
+                    print('Communication process terminated.') # TODO: change to logger
+                    self.session.close()
+                    exit(0)
+
+                msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
                 msg = self.msgr.format_message(0, -1, time, '', log=False, **msg)
 
                 print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
@@ -64,7 +69,7 @@ class Communication:
                     if self.mp_connect_sub:
                         self.mp_connect_sub.put(msg)
                     else:
-                        print(f'communication message received: {msg}')
+                        print(f'communication message received: {msg}') # TODO: change to logger
 
                 self.publish_com_msg(msg)
 

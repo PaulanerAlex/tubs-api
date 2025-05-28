@@ -1,7 +1,11 @@
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
-from config.config import VEH_TYPE, DEBUG_MODE
+from config.config import VEH_TYPE, DEBUG_MODE, CONF_JSON_PATH_LIST
+import sys
+import os
+from tools.commander import run_shell_command as cmd
+
 
 def _screen_prep(func):
     """
@@ -70,38 +74,13 @@ class GUI:
         Displays the options available from the data view screen,
         name in the button encodings should be 'menu'
         '''
-        selected_index = 0
+
+        selected_index = self.menu_loop(list(self.menu_options.keys()))
         
-        def __add_ind(ind):
-            return ind - 1 if ind > 0 else len(self.menu_options) - 1
-        
-        def __sub_ind(ind):
-            return ind + 1 if ind < len(self.menu_options) - 1 else 0
-        
-        while True:
-            print(self.mp_connect)
+        if selected_index is None:
+            return
 
-            if self.mp_connect.poll():
-                data = self.mp_connect.recv()
-                for key, value in data.items():
-                    
-                    if key == 'gui_ud' and value > 0:
-                        selected_index = __add_ind(selected_index)
-                    elif key == 'gui_ud' and value < 0:
-                        selected_index = __sub_ind(selected_index)
-                    elif key == 'gui_du' and value > 0:
-                        selected_index = __add_ind(selected_index)
-                    elif key == 'gui_du' and value < 0:
-                        selected_index = __sub_ind(selected_index)
-
-                    if key == 'gui_select':
-                        list(self.menu_options.values())[selected_index]() # call the function associated with the selected option
-
-                    if key == 'gui_back':
-                        self.menu_state = None
-                        return
-
-            self.display_menu(list(self.menu_options.keys()), selected=selected_index)
+        list(self.menu_options.values())[selected_index]() # call the function associated with the selected option 
 
     def display_com_msg_view(self):
         '''
@@ -109,6 +88,7 @@ class GUI:
         '''
         if DEBUG_MODE:
             from tools.messenger import Messenger as msgr
+
         msgs = []
         while True:
             if self.mp_connect_com is None or self.mp_connect is None:
@@ -138,7 +118,53 @@ class GUI:
         '''
         Change the config file, on which the system is parameterized.
         '''
-        pass
+        options = CONF_JSON_PATH_LIST
+
+        selected_index = self.menu_loop(options)
+        
+        if selected_index is None:
+            return
+
+        # TODO: finish implementation with TERMINATE global variable that is shared with the controller process
+
+        # terminate process to restart whole program with the new config
+        exit(0)
+
+    def menu_loop(self, options):
+        '''
+        Main loop for the menu, which allows to navigate through the menu options.
+        Wraps the display_menu function and handles the input from the controller.
+        '''
+        selected_index = 0
+
+        def __add_ind(ind):
+            return ind - 1 if ind > 0 else len(options) - 1
+        
+        def __sub_ind(ind):
+            return ind + 1 if ind < len(options) - 1 else 0
+        
+        while True:
+            if self.mp_connect.poll():
+                data = self.mp_connect.recv()
+                for key, value in data.items():
+                    
+                    if key == 'gui_ud' and value > 0:
+                        selected_index = __add_ind(selected_index)
+                    elif key == 'gui_ud' and value < 0:
+                        selected_index = __sub_ind(selected_index)
+                    elif key == 'gui_du' and value > 0:
+                        selected_index = __add_ind(selected_index)
+                    elif key == 'gui_du' and value < 0:
+                        selected_index = __sub_ind(selected_index)
+
+                    if key == 'gui_select':
+                        return selected_index
+
+                    if key == 'gui_back':
+                        self.menu_state = None
+                        return None
+
+            self.display_menu(options, selected=selected_index)
 
 
     @_screen_prep
