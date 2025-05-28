@@ -13,7 +13,7 @@ class ControllerEvents:
         self.mp_connect_gui = mp_connect_gui
         self.cnf = ConfigHandler(communication=True)
 
-    def loop_until_event(self):
+    def loop_until_event(self): # TODO: remove unnessary function
         """
         Loop until an event is received from the controller.
         Should be called in an own process.
@@ -21,8 +21,6 @@ class ControllerEvents:
         """
         while True:
             synced, ev_dict, ev_dict_gui = self.get_controller_event()
-            if ev_dict.get('unplugged'):
-                raise UnpluggedError
             return synced, ev_dict, ev_dict_gui
 
     def get_controller_event(self):
@@ -73,7 +71,7 @@ class ControllerEvents:
             
             # display unplugged message if unplugged
             if not status:
-                if ev_dict.get('unplugged') == True and not unplugged: # to display only once
+                if ev_dict.get('unplugged', False) == True and not unplugged: # to display only once
                     # TODO: log this
                     print('controller unplugged')
                     self.mp_connect_com.send(ev_dict)
