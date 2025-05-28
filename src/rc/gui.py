@@ -59,7 +59,7 @@ class GUI:
                 latest_data = mp_connect.recv()
             
             try:
-                data_com = mp_connect_com.get()
+                data_com = mp_connect_com.get(block=False)
             except Exception:
                 data_com = None
 
