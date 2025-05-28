@@ -68,7 +68,6 @@ class GUI:
 
             if latest_data:
                 data = latest_data
-                print(data)
                 acc = data.get('acc', acc)
                 dcc = data.get('dcc', dcc)
                 steer = data.get('str', steer)
