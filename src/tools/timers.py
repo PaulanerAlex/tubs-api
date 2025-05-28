@@ -54,7 +54,7 @@ class Timer:
         return delta
     
     def get_refresh_rate(self):
-        """Return the average refresh rate based on the last intervals."""
+        """Return the average refresh rate based on the last intervals, in Hz."""
         if not self.last_intervals:
             return 0
-        return sum(self.last_intervals) / len(self.last_intervals)
+        return 1 / (sum(self.last_intervals) / len(self.last_intervals))
