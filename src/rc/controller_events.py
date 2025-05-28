@@ -54,7 +54,8 @@ class ControllerEvents:
                     continue
 
         if not HEADLESS_MODE:
-            ev_dict_gui.update(ev_dict)    
+            ev_dict_gui.update(ev_dict)
+            print(ev_dict_gui)
 
         return True, ev_dict, ev_dict_gui
 

@@ -34,7 +34,7 @@ class GUI:
         self.menu_options = {
             'log view' : self.display_com_msg_view,
             'change config file' : self.change_config,
-        }
+        } # TODO: add option to enable/disable ssh server
         self.mp_connect = None
         self.mp_connect_com = None
 
@@ -56,8 +56,7 @@ class GUI:
             latest_data = None
             while mp_connect.poll():
                 latest_data = mp_connect.recv()
-            if mp_connect_com.poll():
-                latest_data_com = mp_connect_com.recv()
+            data_com = mp_connect_com.get()
             if latest_data:
                 data = latest_data
                 acc = data.get('acc', acc)
@@ -69,9 +68,9 @@ class GUI:
                     self.menu_state = 'options_menu'
                     self.display_options_menu()
                 else:
-                    if latest_data_com:
-                        freq = latest_data_com.get('gui_send_freq')
-                    self.display_data_screen_car(0 + acc - dcc, steer, {'snd_fq': freq.__round__(2) if freq else 'N/A', 'acc': acc, 'dcc': dcc, 'steer': steer})
+                    if data_com:
+                        freq = data_com.get('gui_send_freq')
+                    self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq.__round__(2)}Hz' if freq else 'N/A', 'acc': acc, 'dcc': dcc, 'steer': steer})
 
     def display_options_menu(self):
         '''
