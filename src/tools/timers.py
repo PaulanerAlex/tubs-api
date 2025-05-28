@@ -46,10 +46,11 @@ class Timer:
         """Return the time since the last interval."""
         if self.last_interval_time is None:
             self.last_interval_time = time.time()
-        delta = self.elapsed() - self.last_interval_time
+        delta = time.time() - self.last_interval_time
         self.last_intervals.append(delta)
         if len(self.last_intervals) > self.interval_resolution:
             self.last_intervals.pop(0)
+        self.last_interval_time = time.time()
         return delta
     
     def get_refresh_rate(self):
