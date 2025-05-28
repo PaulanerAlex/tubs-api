@@ -63,7 +63,7 @@ class ControllerEvents:
         '''
         the event loop for controller events. Sends the events to the mp_connect pipe.
         '''
-        unplugged = False
+
         while True:
             if TERMINATE:
                 return
@@ -71,24 +71,21 @@ class ControllerEvents:
             status, ev_dict, ev_dict_gui = self.loop_until_event()
             
             # display unplugged message if unplugged
-            if not status:
-                if ev_dict.get('unplugged', False) == True and not unplugged: # to display only once
-                    # TODO: log this
-                    print('controller unplugged')
-                    
-                    if not HEADLESS_MODE:
-                        self.mp_connect_gui.send(ev_dict_gui)
-                    unplugged = True
-                    continue
-
-                if unplugged:
-                    continue
+            if not status and ev_dict.get('unplugged', False) == True:
+                # TODO: change to logger
+                print('controller unplugged')
                 
-                print('something went wrong') # TODO: change to logger
+                if not HEADLESS_MODE:
+                    self.mp_connect_gui.send(ev_dict_gui)
 
-            if unplugged and status:
-                print(f"controller plugged in")
-                unplugged = False
+                while True:
+                    status, ev_dict, ev_dict_gui = self.loop_until_event()
+                    if ev_dict.get('unplugged', False) == False:
+                        break
+                
+                # TODO: change to logger
+                print('controller plugged in')
+
 
             if ev_dict.__len__() > 0:
                 self.mp_connect_com.send(ev_dict)
