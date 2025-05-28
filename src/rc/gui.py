@@ -54,9 +54,15 @@ class GUI:
                 self.menu_state = self.homescreen
             # Drain the queue to get the latest message
             latest_data = None
+            
             while mp_connect.poll():
                 latest_data = mp_connect.recv()
-            data_com = mp_connect_com.get()
+            
+            try:
+                data_com = mp_connect_com.get()
+            except Exception:
+                data_com = None
+                
             if latest_data:
                 data = latest_data
                 acc = data.get('acc', acc)
