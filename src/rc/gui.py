@@ -125,8 +125,9 @@ class GUI:
             if not DEBUG_MODE:
                 msgs.append(msg['message_body'])
             else:
-                head, status, name, timestamp, args, kwargs, message_body = msgr(name='').parse_message(msg, log=False)
-                msgs.append(kwargs)
+                if msg.get('msg'):
+                    head, status, name, timestamp, args, kwargs, message_body = msgr(name='').parse_message(msg.get('msg'), log=False)
+                    msgs.append(kwargs)
 
             self.display_msg_view(msgs)
     
