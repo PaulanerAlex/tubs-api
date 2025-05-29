@@ -129,7 +129,7 @@ class GUI:
                     head, status, name, timestamp, args, kwargs, message_body = msgr(name='').parse_message(msg.get('msg'), log=False)
                     msgs.append(kwargs)
 
-            self.display_msg_view(msgs)
+            self.display_msg_view(messages=msgs)
     
     def change_config(self):
         '''
@@ -227,7 +227,7 @@ class GUI:
         # Draw messages from bottom up
         for i, msg in enumerate(reversed(visible_msgs)):
             y = self.height - (i + 1) * line_height
-            draw.text((2, y), msg, font=font, fill=255)
+            draw.text((2, y), str(msg), font=font, fill=255)
 
         return image
 
