@@ -106,9 +106,13 @@ class GUI:
             if self.mp_connect_com is None or self.mp_connect is None:
                 raise NotImplementedError('Something went wrong, mp_connect_com or mp_connect is None')
 
-            msg = self.mp_connect_com.get()
-
+            try:
+                msg = self.mp_connect_com.get(block=False)
+            except Exception:
+                msg = None
+            
             latest_data = None
+
             while self.mp_connect.poll():
                 latest_data = self.mp_connect.recv()
 
@@ -116,14 +120,15 @@ class GUI:
                 return
 
             if not msg:
-                return self.display_text("No messages to display")
-            print(f'msg {msg}')
+                self.display_text("No msg to display")
+                continue
             
             if not DEBUG_MODE:
                 msgs.append(msg['message_body'])
             else:
                 head, status, name, timestamp, args, kwargs, message_body = msgr(name='').parse_message(msg, log=False)
                 msgs.append(kwargs)
+
             self.display_msg_view(msgs)
     
     def change_config(self):
