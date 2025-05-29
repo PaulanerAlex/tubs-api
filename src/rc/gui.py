@@ -32,7 +32,7 @@ class GUI:
         self.menu_state = None
         self.homescreen = 'data_screen_car' if VEH_TYPE == 'car' else ''
         self.menu_options = {
-            'log view' : self.display_com_msg_view,
+            'recieving view' : self.display_com_msg_view,
             'change config file' : self.change_config,
         } # TODO: add option to enable/disable ssh server
         self.mp_connect = None
@@ -79,8 +79,7 @@ class GUI:
                 else:
                     if data_com:
                         freq = data_com.get('gui_send_freq')
-                    self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq.__round__(1)}Hz' if freq else 'N/A', 'acc': acc.__round__(1), 'dcc': dcc.__round__(1), 'str': steer.__round__(1)})
-                
+                    self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq}Hz' if freq else 'N/A', 'acc': acc.__round__(1), 'dcc': dcc.__round__(1), 'str': steer.__round__(1)})
     def display_options_menu(self):
         '''
         Displays the options available from the data view screen,

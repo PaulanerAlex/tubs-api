@@ -21,7 +21,7 @@ def _init_standard():
         network_init()
     except Exception as e:
         gui.display_text(f'Network init error:\n{e}')
-        time.sleep(5)
+        time.sleep(2)
         raise e
 
     # display the screen at least 5 seconds

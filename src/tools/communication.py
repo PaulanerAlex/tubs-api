@@ -1,5 +1,5 @@
 import zenoh
-from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICLE, DEBUG_MODE
+from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICLE, DEBUG_MODE, HEADLESS_MODE
 from tools.messenger import Messenger
 from multiprocessing import Pipe
 from tools.config_handler import ConfigHandler
@@ -68,14 +68,14 @@ class Communication:
                 print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
 
                 # TODO: what should be done with this which is not working?
-                # if DEBUG_MODE: # for debugging, pipe the send to the incoming messages
-                #     if self.mp_connect_sub:
-                #         self.mp_connect_sub.put(msg)
-                #     else:
-                #         print(f'communication message received: {msg}') # TODO: change to logger
+                if DEBUG_MODE: # for debugging, pipe the send to the incoming messages
+                    if self.mp_connect_sub:
+                        self.mp_connect_sub.put({'msg': msg})
+                    else:
+                        print(f'communication message received: {msg}') # TODO: change to logger
 
-                if self.mp_connect_sub is not None: # send send frequency to gui
-                    self.mp_connect_sub.put({'gui_send_freq': tm.get_refresh_rate()})
+                if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
+                    self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})
                 
                 self.publish_com_msg(msg)
                 tm.interval()
