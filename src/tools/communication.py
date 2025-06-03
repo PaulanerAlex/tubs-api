@@ -21,8 +21,6 @@ class Communication:
             pub_ending = 'to_rc'
             sub_ending = 'to_veh'
 
-        global IS_VEHICLE, DEBUG_MODE
-
         pub_topic = str(self.key) + f'/{pub_ending}'
         sub_topic = str(self.key) + f'/{sub_ending}'
 
