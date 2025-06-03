@@ -18,12 +18,18 @@ if [[ "$SETUP_TYPE" != "rc" && "$SETUP_TYPE" != "ve" ]]; then
     exit 1
 fi
 
+if [[ "$SETUP_TYPE" == "rc" ]]; then
+    echo "Setting up for remote controller..."
+elif [[ "$SETUP_TYPE" == "ve" ]]; then
+    echo "Unfortunately, setup for vehicle is not yet supported. Please clone and install manually according to your vehicle type."
+fi
+
 # keep-alive: update existing `sudo` time stamp until the script finishes
 sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 # check if the system is Raspberry Pi OS 32-bit
-if [[ "$(uname -m)" == "armv7l" && -f /etc/os-release && "$(grep 'Raspbian' /etc/os-release)" && "$SETUP_TYPE" == "rc"]]; then
+if [[ "$(uname -m)" == "armv7l" && -f /etc/os-release && $(grep -q 'Raspbian' /etc/os-release && echo true) == "true" && "$SETUP_TYPE" == "rc" ]]; then
     echo "detected System is Raspberry Pi OS 32-bit."
 else
     echo "ERROR: detected System is not Raspberry Pi OS 32-bit."
@@ -40,8 +46,8 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 PYTHON_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-if [[ "$(printf '%s\n' "$PYTHON_VERSION_REQUIRED" "$PYTHON_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]]; then
-    echo "ERROR: Python version must be greater than 3.10. Found $PYTHON_VERSION."
+if [[ "$(printf '%s\n' "$PYTHON_VERSION_REQUIRED" "$PYTHON_VERSION" | sort -V | head -n1)" == "$PYTHON_VERSION" && "$PYTHON_VERSION" != "$PYTHON_VERSION_REQUIRED" ]]; then
+    echo "ERROR: Python version must be $PYTHON_VERSION_REQUIRED or higher. Found $PYTHON_VERSION."
     exit 1
 fi
 
@@ -51,7 +57,7 @@ if ! command -v git &> /dev/null; then
     exit 1
 fi
 
-read -p "Should this script now install standart python and git versions and try to work with them? (Enter 'y' or 'n' for yes or no): " INSTALL_STANDARD
+read -p "Should this script now install standard python and git versions? Choose no if they are already installed. (Enter 'y' or 'n' for yes or no): " INSTALL_STANDARD
 
 if [[ "$INSTALL_STANDARD" == "y" ]]; then
     echo "Installing standard python and git versions..."
@@ -84,12 +90,74 @@ cd src
 
 if [[ "$SETUP_TYPE" == "rc" ]]; then
     touch src/on_rc.txt
-    pip install -r requirements_rc.txt # TODO: change to uv, pip crashes on rpi zero 2w most certainly because of the low memory
+    pip install -r requirements_rc.txt
 elif [[ "$SETUP_TYPE" == "ve" ]]; then
     touch src/on_vehicle.txt
-    pip install -r requirements.txt # TODO: change to uv, pip crashes on rpi zero 2w most certainly because of the low memory
+    pip install -r requirements.txt
 fi
 
+read -p "Should this script now write a sample config file for the default hardware? Can be changed later by editing the json file in $REPO_FOLDER_NAME/src/config/ and restarting the service with sudo systemctl restart $SERVICE_NAME.  (Enter 'y' or 'n' for yes or no): " WRITE_CONFIG
+
+
+if [[ "$WRITE_CONFIG" != "y" ]]; then
+    echo "Skipping writing sample config file. \n WARNING: The service WILL FAIL TO START until a valid config file is created. See $REPO_FOLDER_NAME/src/config/README.md for more information."
+else
+    read -p "Type in the ssid of the wifi network you want the script to connect the system to (e. g. hotspot of vehicle or groundstation). Leave blank for the currently connected network : " WIFI_SSID
+    if [[ -n "$WIFI_SSID" ]]; then
+        read -p "Type in the password of the wifi network: " WIFI_PASSWORD
+    else
+        # get current ssid and password
+        WIFI_SSID=$(iwgetid -r)
+        WIFI_PASSWORD=$(sudo grep -r "^psk=" /etc/NetworkManager/system-connections/ | grep "$WIFI_SSID" | cut -d '=' -f2) # FIXME: debug this
+    fi
+
+    # write standard config
+    cat >config/conf.json << EOL
+{
+    "vehicle" : {
+        "type" : "car",
+        "name" : "clara_simulator"
+    },
+    "program" : {
+        "debug": true,
+        "headless": false
+    },
+    "connection" : {
+        "type" : "wifi",
+        "interface" : "auto",
+        "ssid" : "${WIFI_SSID}",
+        "password" : "${WIFI_PASSWORD}"
+    },
+    "input" : {
+        "lib" : "inputs"
+    },
+    "communication" : {
+        "encoding" : {
+            "ABS_RZ" : "acc",
+            "ABS_Z" : "dcc",
+            "ABS_X" : "str",
+            "BTN_TR" : "ems"
+        },
+        "encoding_norm" : {
+            "ABS_RZ" : 255,
+            "ABS_Z" : 255,
+            "ABS_X" : 65535
+        }
+    },
+    "gui" : {
+        "encoding" : {
+            "BTN_START" : "gui_menu",
+            "BTN_NORTH" : "gui_select",
+            "BTN_SOUTH" : "gui_back",
+            "ABS_HAT0Y" : "gui_du",
+            "ABS_HAT0X" : "gui_rl"
+        }
+    }
+}
+
+EOL
+    echo "Wrote file to $REPO_FOLDER_NAME/src/config/conf.json"
+fi
 
 # TODO: enable i2c driver https://luma-oled.readthedocs.io/en/latest/hardware.html#i2c
 sudo usermod -a -G i2c $USER
@@ -110,6 +178,9 @@ User=$USER
 WorkingDirectory=$(pwd)/$REPO_FOLDER_NAME/src
 ExecStart=$(pwd)/$REPO_FOLDER_NAME/env/bin/python3 $(pwd)/$REPO_FOLDER_NAME/src/run.py
 Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
@@ -125,5 +196,4 @@ echo "Setup completed successfully. Rebooting the system..."
 
 # Reboot the system
 sudo reboot now
-
 
