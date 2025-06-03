@@ -1,8 +1,10 @@
-from config.config import LOG_FILE_PATH, DEBUG_MODE
+from config.config import LOG_FILE_PATH, LOG_PATH, DEBUG_MODE
 from tools.messenger import Messenger
 import logging as log
 import os
 import linecache
+from datetime import datetime as dt
+import traceback
 
 def log_print(func):
     """
@@ -16,7 +18,7 @@ def log_print(func):
         return result
     return wrapper
 
-def write_to_log(func):
+def _write_to_log(func):
     '''
     Decorator to write to log
     '''
@@ -24,7 +26,7 @@ def write_to_log(func):
         output = func(*args, **kwargs)
         try: 
             with open(LOG_FILE_PATH, 'a') as f:
-                f.write(output)
+                f.write(f'{output}\n')
         except FileNotFoundError:
             os.file.create()
         return output
@@ -33,43 +35,46 @@ def write_to_log(func):
 class Logger:
     def __init__(self, name, path=None):
 
-        self.msgr = Messenger(name=name, log=True)
-        self.path = LOG_FILE_PATH if not path else path
+        self.msgr = Messenger(name=name)
+        self.file_path = LOG_FILE_PATH if not path else path
+        self.path = LOG_PATH
 
-        if DEBUG_MODE:
-            self.log.setLevel(log.DEBUG)
-        else:
-            self.log.setLevel(log.INFO)
-
-    @write_to_log
+    @_write_to_log
     def debug(self, msg, time=None):
-        return self.msgr.fromat_message(status = 1, message=msg, log=True)
+        return self.msgr.format_message(status = 1, time=time, message=msg, log=True)
 
-    @write_to_log
+    @_write_to_log
     def info(self, msg, time=None):
-        return self.msgr.fromat_message(status = 0, message=msg, log=True)
+        return self.msgr.format_message(status = 0, time=time, message=msg, log=True)
 
-    @write_to_log
+    @_write_to_log
     def critical(self, msg, time=None):
-        return self.msgr.fromat_message(status = 4, message=msg, log=True)
+        return self.msgr.format_message(status = 4, time=time, message=msg, log=True)
 
-    @write_to_log
+    @_write_to_log
     def warning(self, msg, time=None):
-        return self.msgr.fromat_message(status = 2, message=msg, log=True)
+        return self.msgr.format_message(status = 2, time=time, message=msg, log=True)
     
-    @write_to_log
+    @_write_to_log
     def error(self, msg, time=None):
-        return self.msgr.fromat_message(status = 3, message=msg, log=True)
+        return self.msgr.format_message(status = 3, time=time, message=msg, log=True)
+
+    def traceback(self, tb: traceback):
+        """
+        Saves the traceback of the exception to an own file inside the log folder.
+        """
+        file_header = f'/traceback_{dt.now().strftime("%d%m%Y-%H%M%S")}.log'
+        with open(str(self.path) + file_header, 'a') as f:
+            f.write(tb)
 
     def view_log(self, lines_index):
         cursor = 0
         content =  ''
-        with open(f'logs/{self.log.name}.log', 'r') as f:
+        with open(self.file_path, 'r') as f:
             lines = f.readlines() # FIXME: debug
             cursor = lines.__len__() - lines_index
-        with open(f'logs/{self.log.name}.log', 'r') as f:
+        with open(self.file_path, 'r') as f:
             for count, line in enumerate(f):
                 if count > cursor:
                     content += line
             return content
-

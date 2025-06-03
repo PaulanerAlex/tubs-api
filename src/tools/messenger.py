@@ -8,7 +8,7 @@ class Messenger:
         self.status_def = ['INFO', 'DEBUG', 'WARNING', 'ERROR', 'CRITICAL']
         self.head_def = ['DO', 'SET', 'GET', 'LOG']
 
-    def format_message(self, head: int, status: int, time: datetime, message: str, log: bool = False, *args, **kwargs):
+    def format_message(self, status: int, time: datetime, message: str, head: int = None, log: bool = False, *args, **kwargs):
         '''
         Format the message in format:
         `[status][name][time][arg1]...[argN][key1=value1]...[keyN=valueN] body` for log or

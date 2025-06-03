@@ -61,7 +61,7 @@ class Communication:
                     exit(0)
 
                 msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
-                msg = self.msgr.format_message(0, -1, time, '', log=False, **msg)
+                msg = self.msgr.format_message(-1, time, '', head=0, log=False, **msg)
 
                 print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
 

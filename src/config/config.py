@@ -30,7 +30,9 @@ if conf_files.__len__() == 0:
     raise FileNotFoundError('No config files found in config folder')
 
 CONF_JSON_PATH = ROOT_PATH.joinpath('config', conf_files[0])
+CONF_MD_PATH = ROOT_PATH.joinpath('config', 'README.md')
 
 VEH_TYPE, COMMUNICATION_KEY, DEBUG_MODE, HEADLESS_MODE = ConfigHandler.init_globals(CONF_JSON_PATH) # gets later declared
 
-LOG_FILE_PATH = ROOT_PATH.joinpath('log', f"{VEH_TYPE.lower() if IS_VEHICLE else 'rc'}.log")
+LOG_FILE_PATH = ROOT_PATH.joinpath('log', f"{COMMUNICATION_KEY.lower() if IS_VEHICLE else 'rc'}.log")
+LOG_PATH = ROOT_PATH.joinpath('log')

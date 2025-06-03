@@ -1,6 +1,8 @@
-from config.config import IS_RC, IS_VEHICLE, CONF_JSON_PATH, ROOT_PATH 
+from config.config import IS_RC, IS_VEHICLE, CONF_JSON_PATH, ROOT_PATH, CONF_MD_PATH
 
 import sys
+import traceback
+from tools.logger import Logger
 
 args = sys.argv[1:]
 for arg in args:
@@ -15,5 +17,20 @@ if IS_VEHICLE:
     from vehicle.processes import start_proc
 
 if __name__ == "__main__":
-    init() # runs once
-    start_proc() # runs continously
+    log = Logger(__name__)
+    try:
+        init() # runs once
+        start_proc() # runs continously
+    except FileNotFoundError as e:
+        # print the error and its likely cause for users that run the program the first time
+        print(f'FILE NOT FOUND: {e}')
+        missing_conf_file_msg = '---> THIS IS MOST LIKELY CAUSED BY A MISSING CONFIG FILE. PLEASE CHECK ' + str(CONF_MD_PATH) + ' FOR MORE INFORMATION.'
+        print(missing_conf_file_msg)
+        exc = str(e) + ' ' + missing_conf_file_msg
+        tb = traceback.format_exc() + f'\n{missing_conf_file_msg}'
+    except Exception as e:
+        tb = traceback.format_exc()
+    finally:
+        log.error(str(exc))
+        log.traceback(tb)       
+        sys.exit(1)
