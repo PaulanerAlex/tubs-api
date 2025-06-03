@@ -2,10 +2,7 @@ from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
 from inputs import UnpluggedError
-from config.config import HEADLESS_MODE, TERMINATE
-
-_TRIGGER_MAX = 2**8 - 1
-_STICK_MAX = 2**16 - 1
+from config.config import HEADLESS_MODE, TERMINATE, DEBUG_MODE
 
 class ControllerEvents:
     def __init__(self, mp_connect_com=None, mp_connect_gui=None):
@@ -53,7 +50,8 @@ class ControllerEvents:
                 except KeyError:
                     continue
 
-        if not HEADLESS_MODE:
+        # replace gui updates with the local ones from controller if debugging without Vehicle
+        if DEBUG_MODE and not HEADLESS_MODE:
             ev_dict_gui.update(ev_dict)
 
         return True, ev_dict, ev_dict_gui
