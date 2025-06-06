@@ -3,6 +3,7 @@ from config.config import IS_RC, IS_VEHICLE, CONF_JSON_PATH, ROOT_PATH, CONF_MD_
 import sys
 import traceback
 from tools.logger import Logger
+from luma.core.error import DeviceNotFoundError
 
 args = sys.argv[1:]
 for arg in args:
@@ -30,6 +31,11 @@ if __name__ == "__main__":
         print(missing_conf_file_msg)
         exc = str(e) + ' ' + missing_conf_file_msg
         tb = traceback.format_exc() + f'\n{missing_conf_file_msg}'
+    except DeviceNotFoundError as e:
+        print('DISPLAY NOT FOUND: Please check if the display is connected and powered on.')
+        display_not_found_error_msg = '---> THIS IS CAUSED BY MISSING DISPLAY. PLEASE CHECK YOUR DISPLAY CONNECTION.'
+        exc = str(e) + ' ' + display_not_found_error_msg
+        tb = traceback.format_exc() + f'\n{display_not_found_error_msg}'
     except Exception as e:
         exc = str(e)
         tb = traceback.format_exc()
