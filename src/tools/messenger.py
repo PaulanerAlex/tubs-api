@@ -6,7 +6,7 @@ class Messenger:
     def __init__(self, name: str):
         self.name = name
         self.status_def = ['INFO', 'DEBUG', 'WARNING', 'ERROR', 'CRITICAL']
-        self.head_def = ['DO', 'SET', 'GET', 'LOG']
+        self.head_def = ['DO', 'SET', 'GET', 'LOG', 'PING']
 
     def format_message(self, status: int, time: datetime, message: str, head: int = None, log: bool = False, *args, **kwargs):
         '''
@@ -25,6 +25,7 @@ class Messenger:
         - 1: `SET` (for setting configuration parameters)
         - 2: `GET` (for getting messages)
         - 3: `LOG` (for logging)
+        - 4: `PING` (for ping messages)
         
         the status can be one of the following:
         - -1: `NONE`
@@ -73,13 +74,18 @@ class Messenger:
 
         message = f'{header}{message}'
 
-        if log and not status == 1:
+        if log and status == 1 and DEBUG_MODE:
             print(message)
-        elif log and status == 1:
-            if DEBUG_MODE:
-                print(message)
 
         return message
+    
+    def ping_message(self, time: datetime = None):
+        '''
+        Returns a ping message in the format:
+        `[head][time]`
+        The head is always `PING`.
+        '''
+        return self.format_message(-1, datetime.now() if time is None else time, '', head=4, log=False)
 
     def parse_message(self, message: str, log: bool = False):
         '''

@@ -2,10 +2,8 @@ from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
 from config.config import VEH_TYPE, DEBUG_MODE, CONF_JSON_PATH_LIST
-import sys
-import os
 from tools.commander import run_shell_command as cmd
-
+import time
 
 def _screen_prep(func):
     """
@@ -33,7 +31,8 @@ class GUI:
         self.homescreen = 'data_screen_car' if VEH_TYPE == 'car' else ''
         self.menu_options = {
             'recieving view' : self.display_com_msg_view,
-            'change config file' : self.change_config,
+            'change config file' : self.display_change_config_view,
+            'shutdown' : self.display_shutdown_view
         } # TODO: add option to enable/disable ssh server
         self.mp_connect = None
         self.mp_connect_com = None
@@ -80,6 +79,7 @@ class GUI:
                     if data_com:
                         freq = data_com.get('!gui_send_freq')
                     self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq}Hz' if freq else 'N/A', 'acc': acc.__round__(1), 'dcc': dcc.__round__(1), 'str': steer.__round__(1)})
+    
     def display_options_menu(self):
         '''
         Displays the options available from the data view screen,
@@ -131,10 +131,11 @@ class GUI:
 
             self.display_msg_view(messages=msgs)
     
-    def change_config(self):
+    def display_change_config_view(self):
         '''
         Change the config file, on which the system is parameterized.
         '''
+        
         options = CONF_JSON_PATH_LIST
 
         selected_index = self.menu_loop(options)
@@ -145,6 +146,18 @@ class GUI:
         # TODO: finish implementation with TERMINATE global variable that is shared with the controller process
 
         # terminate process to restart whole program with the new config
+        exit(0)
+
+    def display_shutdown_view(self):
+        '''
+        Displays the shutdown view.
+        '''
+
+        self.display_text('Shutting down, pls wait at least 10 seconds...')
+        time.sleep(1)  # wait a bit to show the message
+        
+        # TODO: finish implementation with TERMINATE global variable that is shared with the controller process
+
         exit(0)
 
     def menu_loop(self, options):

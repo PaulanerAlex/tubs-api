@@ -1,5 +1,5 @@
 from multiprocessing import Process, Pipe
-from tools.debug_sim import CarSimulation
+from vehicle.debug_sim import CarSimulation
 from tools.communication import Communication
 from rc.controller_events import ControllerEvents
 from config.config import COMMUNICATION_KEY
@@ -58,3 +58,5 @@ def start_proc():
     sim.run()
 
     p.join()  # Wait for control process to finish
+
+    return

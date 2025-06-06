@@ -11,6 +11,8 @@ IS_VEHICLE = os.path.exists(ROOT_PATH.joinpath('on_vehicle.txt'))
 SRC_PATH = ROOT_PATH.joinpath('rc') if IS_RC else ROOT_PATH.joinpath('vehicle')
 RUNTIME_VARS = {}
 TERMINATE = False
+PING_SEND_INTERVAL = 0.2 # seconds, minimal time between the last message and ping message, so a constant upstream is ensured
+SUB_TIMEOUT = 0.7 # seconds, time to wait for a message before triggering emergency stop
 
 if IS_RC:
     CONNECTING_SCREEN_PATH = ROOT_PATH.joinpath('assets', 'connecting_screen.png')

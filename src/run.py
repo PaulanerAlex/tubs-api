@@ -18,6 +18,8 @@ if IS_VEHICLE:
 
 if __name__ == "__main__":
     log = Logger(__name__)
+    exc = None
+    tb = None
     try:
         init() # runs once
         start_proc() # runs continously
@@ -29,8 +31,11 @@ if __name__ == "__main__":
         exc = str(e) + ' ' + missing_conf_file_msg
         tb = traceback.format_exc() + f'\n{missing_conf_file_msg}'
     except Exception as e:
+        exc = str(e)
         tb = traceback.format_exc()
     finally:
-        log.error(str(exc))
-        log.traceback(tb)       
-        sys.exit(1)
+        if exc is not None or tb is not None:
+            log.error(str(exc))
+            log.traceback(tb)       
+            sys.exit(1) # exit with error code if no exception occurred
+        sys.exit(0)  # exit with success code if no exception occurred

@@ -22,6 +22,7 @@ class Timer:
         self.start_interval = None # time since start
         if start:
             self.start()
+            self.last_interval_time = self.start_time
 
     def start(self):
         """Start the timer."""

@@ -57,6 +57,17 @@ class CarSimulation:
         if self.car_speed > 0:
             self.steering_angle = np.deg2rad(-amount)
             self.car_angle -= self.steering_angle
+    
+    def emergency_stop(self):
+        """Immediately stop the car."""
+        self.brake(999)
+        while True:
+            if self.car_speed <= 0:
+                self.car_speed = 0
+                break
+            self.update_car()
+            print('EMERGENCY STOP: Car stopped...')
+            raise SystemExit("Emergency stop triggered. Simulation ended.")
 
     # --- Animation Loop ---
     def animate(self, frame):
@@ -75,6 +86,8 @@ class CarSimulation:
                 self.steer_left(val)
             elif command == 'steer_right':
                 self.steer_right(val)
+            elif command == 'ems':
+                self.emergency_stop()
             elif command == 'exit':
                 plt.close()  # Close the plot to end simulation
 
