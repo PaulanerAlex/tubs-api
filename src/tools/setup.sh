@@ -22,6 +22,7 @@ if [[ "$SETUP_TYPE" == "rc" ]]; then
     echo "Setting up for remote controller..."
 elif [[ "$SETUP_TYPE" == "ve" ]]; then
     echo "Unfortunately, setup for vehicle is not yet supported. Please clone and install manually according to your vehicle type."
+    exit 0
 fi
 
 # keep-alive: update existing `sudo` time stamp until the script finishes
@@ -87,12 +88,11 @@ source env/bin/activate
 
 cd src
 
-
 if [[ "$SETUP_TYPE" == "rc" ]]; then
-    touch src/on_rc.txt
+    touch on_rc.txt
     pip install -r requirements_rc.txt
 elif [[ "$SETUP_TYPE" == "ve" ]]; then
-    touch src/on_vehicle.txt
+    touch on_vehicle.txt
     pip install -r requirements.txt
 fi
 
