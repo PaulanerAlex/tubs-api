@@ -1,0 +1,11 @@
+env/
+src/is_rc.txt
+src/is_vehicle.txt
+src/on_rc.txt
+src/on_vehicle.txt
+src/config/conf.json
+src/config/conf^*.json
+**/__pycache__
+src/log/*
+.vscode/
+!src/log/.gitkeep
