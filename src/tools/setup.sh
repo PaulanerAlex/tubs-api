@@ -51,12 +51,6 @@ if [[ "$(printf '%s\n' "$PYTHON_VERSION_REQUIRED" "$PYTHON_VERSION" | sort -V | 
     exit 1
 fi
 
-# check if git is installed
-if ! command -v git &> /dev/null; then
-    echo "ERROR: git is not installed."
-    exit 1
-fi
-
 read -p "Should this script now install standard python and git versions? Choose no if they are already installed. (Enter 'y' or 'n' for yes or no): " INSTALL_STANDARD
 
 if [[ "$INSTALL_STANDARD" == "y" ]]; then
@@ -70,6 +64,12 @@ if [[ "$INSTALL_STANDARD" == "y" ]]; then
 else
     echo "Skipping installation of standard python and git versions. Ending script."
     exit 0
+fi
+
+# check if git is installed
+if ! command -v git &> /dev/null; then
+    echo "ERROR: git is not installed."
+    exit 1
 fi
 
 # setup git repo
