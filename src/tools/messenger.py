@@ -53,8 +53,15 @@ class Messenger:
 
         # TODO: add timestamp before sending to be as exact as possible
         # TODO: add micro-, milliseconds to timestamp, remove year, month, day
-        if time:
+        if time and isinstance(time, datetime):
             timestamp = f'[{time.strftime("%Y%m%dT%H%M%S")}]'
+        elif time and isinstance(time, float):
+            timestamp = f'[{datetime.fromtimestamp(time).strftime("%Y%m%dT%H%M%S")}]'
+        elif time and isinstance(time, str):
+            try:
+                timestamp = f'[{datetime.strptime(time, "%Y%m%dT%H%M%S").strftime("%Y%m%dT%H%M%S")}]'
+            except ValueError:
+                timestamp = f'[{datetime.now().strftime("%Y%m%dT%H%M%S")}]'
         else:
             timestamp = f'[{datetime.now().strftime("%Y%m%dT%H%M%S")}]'
 
