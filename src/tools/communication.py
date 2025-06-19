@@ -64,7 +64,7 @@ class Communication:
         while True:
             
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
-            if time.time() - tm.last_interval_time < datetime.timedelta(seconds=PING_SEND_INTERVAL):
+            if time.time() - tm.last_interval_time < PING_SEND_INTERVAL:
                 msg = self.msgr.ping_message(tm.last_interval_time)
                 self.publish_com_msg(msg)
 
