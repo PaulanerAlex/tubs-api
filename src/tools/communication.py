@@ -1,3 +1,4 @@
+import datetime
 import zenoh
 from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICLE, DEBUG_MODE, HEADLESS_MODE, PING_SEND_INTERVAL, SUB_TIMEOUT
 from tools.messenger import Messenger
@@ -63,7 +64,7 @@ class Communication:
         while True:
             
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
-            if time.time() - tm.last_interval_time < time.timedelta(seconds=PING_SEND_INTERVAL):
+            if time.time() - tm.last_interval_time < datetime.timedelta(seconds=PING_SEND_INTERVAL):
                 msg = self.msgr.ping_message(tm.last_interval_time)
                 self.publish_com_msg(msg)
 
@@ -109,7 +110,7 @@ class Communication:
             if self.tm is None:
                 time.sleep(0.001)
                 continue
-            if self.tm.last_interval_time - time.time() > time.timedelta(seconds=PING_SEND_INTERVAL):
+            if self.tm.last_interval_time - time.time() > datetime.timedelta(seconds=PING_SEND_INTERVAL):
                 self.mp_connect_sub.send({'ems':1}) # send emergency stop if no message was received for a while
             time.sleep(0.001) # TODO: find a better solution to keep the process alive
 
