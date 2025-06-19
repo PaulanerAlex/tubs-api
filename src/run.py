@@ -31,7 +31,7 @@ if __name__ == "__main__":
         print(missing_conf_file_msg)
         exc = str(e) + ' ' + missing_conf_file_msg
         tb = traceback.format_exc() + f'\n{missing_conf_file_msg}'
-    except DeviceNotFoundError as e:
+    except DeviceNotFoundError as e: # should not trigger if HEADLESS_MODE is True
         print('DISPLAY NOT FOUND: Please check if the display is connected and powered on.')
         display_not_found_error_msg = '---> THIS IS CAUSED BY MISSING DISPLAY. PLEASE CHECK YOUR DISPLAY CONNECTION.'
         exc = str(e) + ' ' + display_not_found_error_msg

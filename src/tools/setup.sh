@@ -163,6 +163,16 @@ fi
 sudo usermod -a -G i2c $USER
 sudo apt-get install i2c-tools
 
+# Enable I2C interface without using raspi-config
+if ! grep -q "^dtparam=i2c_arm=on" /boot/config.txt; then
+    echo "Enabling I2C in /boot/config.txt..."
+    echo "dtparam=i2c_arm=on" | sudo tee -a /boot/config.txt
+else
+    echo "I2C already enabled in /boot/config.txt."
+fi
+
+sudo modprobe i2c-dev
+
 # go back to the beginning
 cd ../..
 
