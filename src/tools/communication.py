@@ -79,7 +79,7 @@ class Communication:
             if pressed_time:
                 msg = msg.pop('time') 
 
-            if self.glob_qu.get(False).get('terminate'):
+            if self.glob_qu.get(blocking=False).get('terminate'):
                 print('Communication process terminated.') # TODO: change to logger
                 self.session.close()
                 exit(0)

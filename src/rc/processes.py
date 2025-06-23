@@ -38,7 +38,7 @@ def start_proc():
         gui_proc.join()  # Wait for GUI process to finish
     com_proc.join()  # Wait for communication process to finish
 
-    new_conf = glob_qu.get(False).get('new_config', False) # TODO: implement in other process
+    new_conf = glob_qu.get(blocking=False).get('new_config', False) # TODO: implement in other process
     if new_conf:
         new_conf = [new_conf]
         restart_program(new_conf)
