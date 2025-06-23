@@ -43,6 +43,8 @@ def _write_to_log(func):
         try: 
             with open(LOG_FILE_PATH, 'a') as f:
                 f.write(f'{output}\n')
+            if DEBUG_MODE:
+                print(output)
         except FileNotFoundError:
             os.file.create()
         return output
