@@ -200,19 +200,54 @@ class GUI:
     def display_text(self, text, position=None, font=None):
         """
         Display text on the screen. If position is None, center the text.
+        Automatically wraps text if it exceeds the screen width.
         """
         image = Image.new("1", (self.width, self.height))
-        draw = ImageDraw.Draw(image)    
+        draw = ImageDraw.Draw(image)
         if not font:
             font = ImageFont.load_default()
+
+        # Split text into lines that fit the width
+        def wrap_text(text, font, max_width):
+            words = text.split()
+            lines = []
+            current_line = ""
+            for word in words:
+                test_line = current_line + (" " if current_line else "") + word
+                bbox = font.getbbox(test_line)
+                line_width = bbox[2] - bbox[0]
+                if line_width <= max_width:
+                    current_line = test_line
+                else:
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+            if current_line:
+                lines.append(current_line)
+            return lines
+
+        lines = wrap_text(text, font, self.width)
+
+        # Calculate line height
+        bbox = font.getbbox("A")
+        line_height = (bbox[3] - bbox[1]) + 2
+
+        total_text_height = line_height * len(lines)
         if not position:
-            bbox = font.getbbox(text)
+            y = (self.height - total_text_height) // 2
+        else:
+            y = position[1]
+
+        for line in lines:
+            bbox = font.getbbox(line)
             text_width = bbox[2] - bbox[0]
-            text_height = bbox[3] - bbox[1]
-            x = (self.width - text_width) // 2
-            y = (self.height - text_height) // 2
-            position = (x, y)
-        draw.text(position, text, font=font, fill=255)
+            if not position:
+                x = (self.width - text_width) // 2
+            else:
+                x = position[0]
+            draw.text((x, y), line, font=font, fill=255)
+            y += line_height
+
         return image
 
     @_screen_prep
