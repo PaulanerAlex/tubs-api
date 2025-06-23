@@ -207,26 +207,7 @@ class GUI:
         if not font:
             font = ImageFont.load_default()
 
-        # Split text into lines that fit the width
-        def wrap_text(text, font, max_width):
-            words = text.split()
-            lines = []
-            current_line = ""
-            for word in words:
-                test_line = current_line + (" " if current_line else "") + word
-                bbox = font.getbbox(test_line)
-                line_width = bbox[2] - bbox[0]
-                if line_width <= max_width:
-                    current_line = test_line
-                else:
-                    if current_line:
-                        lines.append(current_line)
-                    current_line = word
-            if current_line:
-                lines.append(current_line)
-            return lines
-
-        lines = wrap_text(text, font, self.width)
+        lines = self.wrap_text(text, font, self.width)
 
         # Calculate line height
         bbox = font.getbbox("A")
@@ -249,6 +230,28 @@ class GUI:
             y += line_height
 
         return image
+
+
+    def wrap_text(self, text, font, max_width):
+        '''
+        Split text into lines that fit the width of the screen.
+        '''
+        words = text.split()
+        lines = []
+        current_line = ""
+        for word in words:
+            test_line = current_line + (" " if current_line else "") + word
+            bbox = font.getbbox(test_line)
+            line_width = bbox[2] - bbox[0]
+            if line_width <= max_width:
+                current_line = test_line
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+        if current_line:
+            lines.append(current_line)
+        return lines
 
     @_screen_prep
     def display_msg_view(self, messages=None, font=None):
