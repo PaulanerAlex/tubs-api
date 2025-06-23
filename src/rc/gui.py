@@ -36,13 +36,15 @@ class GUI:
         } # TODO: add option to enable/disable ssh server
         self.mp_connect = None
         self.mp_connect_com = None
+        self.glob_qu = None
 
-    def gui_proc_loop_car(self, mp_connect, mp_connect_com):
+    def gui_proc_loop_car(self, mp_connect, mp_connect_com, glob_qu):
         """
         main loop to refresh the screen.
         """
         self.mp_connect = mp_connect
         self.mp_connect_com = mp_connect_com
+        self.glob_qu = glob_qu
         self.display.clear()
         acc = 0
         dcc = 0
@@ -143,9 +145,9 @@ class GUI:
         if selected_index is None:
             return
 
-        # TODO: finish implementation with TERMINATE global variable that is shared with the controller process
+        # terminate all processes to restart whole program with the new config
+        self.glob_qu.put({'terminate': True, 'new_config': options[selected_index]})  
 
-        # terminate process to restart whole program with the new config
         exit(0)
 
     def display_shutdown_view(self):
@@ -155,8 +157,9 @@ class GUI:
 
         self.display_text('Shutting down, pls wait at least 10 seconds...')
         time.sleep(1)  # wait a bit to show the message
-        
-        # TODO: finish implementation with TERMINATE global variable that is shared with the controller process
+
+        # terminate all processes
+        self.glob_qu.put({'terminate': True})
 
         exit(0)
 

@@ -20,7 +20,7 @@ def sub_savety_interval(func):
     return wrapper
 
 class Communication:
-    def __init__(self, key: str = '', mp_connect_sub = None, mp_connect_pub = None, listener_func=None):
+    def __init__(self, key: str = '', mp_connect_sub = None, mp_connect_pub = None, listener_func=None, glob_qu=None):
         self.key = key
         self.session = zenoh.open(zenoh.Config())
         
@@ -53,6 +53,7 @@ class Communication:
         self.msgr = Messenger(COMMUNICATION_KEY) # name will not be shown in the communication messages
         self.mp_connect_sub = mp_connect_sub
         self.mp_connect_pub = mp_connect_pub
+        self.glob_qu = glob_qu
         self.tm = None
 
     def pub_loop(self):
@@ -78,7 +79,7 @@ class Communication:
             if pressed_time:
                 msg = msg.pop('time') 
 
-            if msg.get('terminate'):
+            if self.glob_qu.get(False).get('terminate'):
                 print('Communication process terminated.') # TODO: change to logger
                 self.session.close()
                 exit(0)

@@ -2,12 +2,13 @@ from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
 from inputs import UnpluggedError
-from config.config import HEADLESS_MODE, TERMINATE, DEBUG_MODE
+from config.config import HEADLESS_MODE, DEBUG_MODE
 
 class ControllerEvents:
-    def __init__(self, mp_connect_com=None, mp_connect_gui=None):
+    def __init__(self, mp_connect_com=None, mp_connect_gui=None, glob_qu=None):
         self.mp_connect_com = mp_connect_com
         self.mp_connect_gui = mp_connect_gui
+        self.glob_qu = glob_qu
         self.cnf = ConfigHandler(communication=True)
 
     def loop_until_event(self): # TODO: remove unnessary function
@@ -62,7 +63,7 @@ class ControllerEvents:
         '''
 
         while True:
-            if TERMINATE:
+            if self.glob_qu.get(False).get('terminate', False):
                 return
 
             status, ev_dict, ev_dict_gui = self.loop_until_event()
