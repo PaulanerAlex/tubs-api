@@ -37,6 +37,7 @@ class ControllerEvents:
         try:
             print('get_controller_event')
             events = get_gamepad()
+            print('get_controller_event_finish')
         except UnpluggedError:
             return False, {'unplugged': True}, {'unplugged': True}
         ev_dict = {}
