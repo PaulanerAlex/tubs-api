@@ -20,10 +20,14 @@ def log_print(func):
             log = Logger(func.__name__)
         log.info(f'Starting {func.__name__}')
         timer = Timer(start=True)
-        result = func(*args, **kwargs)
-        elapsed_time = timer.elapsed()
-        log.info(f'Finished {func.__name__}, took {elapsed_time:.2f} seconds')
-        return result
+        try:
+            result = func(*args, **kwargs)
+            return result
+        finally:
+            # this finally block ensures logging happens even if an exception is raised.
+            # exceptions are not suppressed and will propagate to the caller.
+            elapsed_time = timer.elapsed()
+            log.info(f'Finished {func.__name__}, took {elapsed_time:.2f} seconds')
     return wrapper
 
 
