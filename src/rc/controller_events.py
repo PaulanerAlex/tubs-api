@@ -3,6 +3,7 @@ from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
 from inputs import UnpluggedError
 from config.config import HEADLESS_MODE, DEBUG_MODE
+from tools.logger import Logger, log_print
 
 class ControllerEvents:
     def __init__(self, mp_connect_com=None, mp_connect_gui=None, glob_qu=None):
@@ -10,6 +11,7 @@ class ControllerEvents:
         self.mp_connect_gui = mp_connect_gui
         self.glob_qu = glob_qu
         self.cnf = ConfigHandler(communication=True)
+        self.log = Logger(__name__)
 
     def loop_until_event(self): # TODO: remove unnessary function
         """
@@ -57,6 +59,7 @@ class ControllerEvents:
 
         return True, ev_dict, ev_dict_gui
 
+    @log_print
     def event_loop(self):
         '''
         the event loop for controller events. Sends the events to the mp_connect pipe.
