@@ -16,6 +16,7 @@ def sub_savety_interval(func):
         if self.tm is None:
             self.tm = Timer(start=True)
         self.tm.interval() # update the last interval time to the current time
+        print(self.tm.last_interval_time)
         output = func(*args, **kwargs)
         return output
     return wrapper
@@ -72,7 +73,6 @@ class Communication:
                 self.publish_com_msg(msg)
                 tm.interval()
 
-
             try:
                 gui_msg = self.glob_qu.get(block=False)
                 if gui_msg.get('terminate'):
@@ -96,16 +96,13 @@ class Communication:
 
             # TODO: add logging, so that important messages are logged, but at a better place 
             msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
-            msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else tm.last_interval_time, '', head=0, log=False, **msg)
+            msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else time.now(), '', head=0, log=False, **msg)
 
             if DEBUG_MODE:
                 self.log.debug_plain(f'[SENDING]{msg}')
 
-            if DEBUG_MODE: # for debugging, pipe the send messages to the incoming messages
-                if self.mp_connect_sub:
+                if self.mp_connect_sub: # for debugging, pipe the send messages to the incoming messages
                     self.mp_connect_sub.put({'msg': msg})
-                else:
-                    self.log.debug_plain(f'[RECIEVED]{msg}')
 
             if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
                 self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})
@@ -118,14 +115,16 @@ class Communication:
         Keeps process alive.
         Incoming messages are handled in the listener_callback function.
         '''
+        self.tm = Timer(start=True)
         while True:
             # FIXME: check if this method works with the listener callbacks
             if self.tm is None:
                 time.sleep(0.001)
                 continue
-            if self.tm.last_interval_time - time.time() > PING_SEND_INTERVAL:
+            if time.time() - self.tm.last_interval_time > SUB_TIMEOUT:
                 self.log.debug('No message received for a while, sending emergency stop.')
                 self.mp_connect_sub.send({'ems':1}) # send emergency stop if no message was received for a while
+                return
             time.sleep(0.001) # TODO: find a better solution to keep the process alive
 
     def publish_com_msg(self, msg: str):
