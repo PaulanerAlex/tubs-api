@@ -59,7 +59,7 @@ class Logger:
         """
         Log message without any formatting. Only for debugging. 
         """
-        return msg
+        return f'[DEBUG]{msg}'
 
     @_write_to_log
     def info(self, msg, time=None):
