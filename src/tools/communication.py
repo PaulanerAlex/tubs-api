@@ -90,19 +90,18 @@ class Communication:
             except Exception: # if the queue is empty, just continue
                 pass
 
+            # TODO: add logging, so that important messages are logged, but at a better place 
             msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
             msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else tm.last_interval_time, '', head=0, log=False, **msg)
 
-            print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
             if DEBUG_MODE:
-                self.log.debug(f'sending: {msg}')
+                self.log.debug_plain(f'[SENDING]{msg}')
 
             if DEBUG_MODE: # for debugging, pipe the send messages to the incoming messages
                 if self.mp_connect_sub:
                     self.mp_connect_sub.put({'msg': msg})
                 else:
-                    self.log.debug(f'recieved: {msg}')
-                    # print(f'communication message received: {msg}') # TODO: change to logger
+                    self.log.debug_plain(f'[RECIEVED]{msg}')
 
             if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
                 self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})

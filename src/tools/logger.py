@@ -55,6 +55,13 @@ class Logger:
         return self.msgr.format_message(status = 1, time=time, message=msg, log=True)
 
     @_write_to_log
+    def debug_plain(self, msg):
+        """
+        Log message without any formatting. Only for debugging. 
+        """
+        return msg
+
+    @_write_to_log
     def info(self, msg, time=None):
         return self.msgr.format_message(status = 0, time=time, message=msg, log=True)
 
