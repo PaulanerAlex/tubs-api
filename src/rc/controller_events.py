@@ -66,14 +66,15 @@ class ControllerEvents:
         '''
 
         while True:
-            
             # check if the process should be terminated
             try:
                 gui_msg = self.glob_qu.get(block=False)
                 if DEBUG_MODE:
                     self.log.debug_plain(f' Received message from gui: {gui_msg}')
                 if gui_msg.get('terminate', False):
+                    print("[DEBUG] About to return from event_loop due to terminate message")
                     self.glob_qu.put(gui_msg)
+                    print("[DEBUG] Just before return from event_loop")
                     return
             except Exception: # if the queue is empty, just continue
                 pass
