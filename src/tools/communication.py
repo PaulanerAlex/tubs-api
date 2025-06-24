@@ -79,10 +79,13 @@ class Communication:
             if pressed_time:
                 msg = msg.pop('time') 
 
-            if self.glob_qu.get(block=False).get('terminate'):
-                print('Communication process terminated.') # TODO: change to logger
-                self.session.close()
-                exit(0)
+            try:
+                if self.glob_qu.get(block=False).get('terminate'):
+                    print('Communication process terminated.') # TODO: change to logger
+                    self.session.close()
+                    exit(0)
+            except Exception: # if the queue is empty, just continue
+                pass
 
             msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
             msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else tm.last_interval_time, '', head=0, log=False, **msg)

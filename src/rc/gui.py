@@ -64,7 +64,7 @@ class GUI:
             
             try:
                 data_com = mp_connect_com.get(block=False)
-            except Exception:
+            except Exception: # if the queue is empty
                 data_com = None
 
             if latest_data:

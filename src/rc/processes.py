@@ -38,7 +38,11 @@ def start_proc():
         gui_proc.join()  # Wait for GUI process to finish
     com_proc.join()  # Wait for communication process to finish
 
-    new_conf = glob_qu.get(block=False).get('new_config', False) # TODO: implement in other process
+    try:
+        new_conf = glob_qu.get(block=False).get('new_config', False) # TODO: implement in other process
+    except Exception: # if the queue is empty, just continue
+        new_conf = False
+
     if new_conf:
         new_conf = [new_conf]
         restart_program(new_conf)

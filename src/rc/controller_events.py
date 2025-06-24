@@ -63,8 +63,12 @@ class ControllerEvents:
         '''
 
         while True:
-            if self.glob_qu.get(block=False).get('terminate', False):
-                return
+            
+            try:
+                if self.glob_qu.get(block=False).get('terminate', False):
+                    return
+            except Exception: # if the queue is empty, just continue
+                pass
 
             status, ev_dict, ev_dict_gui = self.loop_until_event()
             
