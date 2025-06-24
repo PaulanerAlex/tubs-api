@@ -7,7 +7,7 @@ from tools.config_handler import ConfigHandler
 from functools import partial
 import time
 from tools.timers import Timer
-from toos.logger import log_print
+from tools.logger import log_print
 
 def sub_savety_interval(func):
     def wrapper(*args, **kwargs):
