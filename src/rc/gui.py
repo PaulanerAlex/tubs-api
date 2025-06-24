@@ -38,6 +38,7 @@ class GUI:
         self.mp_connect = None
         self.mp_connect_com = None
         self.glob_qu = None
+        self.terminate = False
 
     @log_print
     def gui_proc_loop_car(self, mp_connect, mp_connect_com, glob_qu):
@@ -79,6 +80,8 @@ class GUI:
                 elif data.get('gui_menu'):
                     self.menu_state = 'options_menu'
                     self.display_options_menu()
+                    if self.terminate:
+                        return
                 else:
                     if data_com:
                         freq = data_com.get('!gui_send_freq')
@@ -149,8 +152,7 @@ class GUI:
 
         # terminate all processes to restart whole program with the new config
         self.glob_qu.put({'terminate': True, 'new_config': options[selected_index]})  
-
-        exit(0)
+        self.terminate = True
 
     def display_shutdown_view(self):
         '''
@@ -162,8 +164,7 @@ class GUI:
 
         # terminate all processes
         self.glob_qu.put({'terminate': True})
-
-        exit(0)
+        self.terminate = True
 
     def menu_loop(self, options):
         '''

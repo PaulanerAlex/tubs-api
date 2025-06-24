@@ -83,10 +83,13 @@ class Communication:
                 msg = msg.pop('time') 
 
             try:
-                if self.glob_qu.get(block=False).get('terminate'):
-                    print('Communication process terminated.') # TODO: change to logger
+                gui_msg = self.glob_qu.get(block=False)
+                if gui_msg.get('terminate'):
+                    self.glob_qu.put(gui_msg)
+                    if DEBUG_MODE:
+                        self.log.debug_plain('Received termination signal from gui.')
                     self.session.close()
-                    exit(0)
+                    return
             except Exception: # if the queue is empty, just continue
                 pass
 

@@ -71,8 +71,9 @@ class ControllerEvents:
             try:
                 gui_msg = self.glob_qu.get(block=False)
                 if DEBUG_MODE:
-                    self.log.debug_plain(f'Received message from gui: {gui_msg}')
+                    self.log.debug_plain(f' Received message from gui: {gui_msg}')
                 if gui_msg.get('terminate', False):
+                    self.glob_qu.put(gui_msg)
                     return
             except Exception: # if the queue is empty, just continue
                 pass
