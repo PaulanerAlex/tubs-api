@@ -4,6 +4,9 @@ from tools.communication import Communication
 from config.config import COMMUNICATION_KEY, HEADLESS_MODE
 from rc.gui import GUI
 from tools.commander import restart_program, run_shell_command
+from tools.logger import Logger
+
+log = Logger(__name__)
 
 def start_com_process(mp_connect_sub, mp_connect_pub, glob_qu):
     """
@@ -33,10 +36,13 @@ def start_proc():
 
     # input process in main process until terminated by user in the gui
     input.event_loop()
+    log.info('Controller process terminated, waiting for other processes to finish...')
 
     if not HEADLESS_MODE:
         gui_proc.join()  # Wait for GUI process to finish
+        log.info('GUI process terminated.')
     com_proc.join()  # Wait for communication process to finish
+    log.info('Communication process terminated.')
 
     try:
         new_conf = glob_qu.get(block=False).get('new_config', False) # TODO: implement in other process
@@ -45,8 +51,10 @@ def start_proc():
 
     if new_conf:
         new_conf = [new_conf]
+        log.info(f'Restarting with new configuration: {new_conf}')
         restart_program(new_conf)
     
+    log.info('Shutting down the system...')
     run_shell_command('shutdown now') # Restart the service to apply new configuration
 
     

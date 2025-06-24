@@ -7,7 +7,7 @@ from tools.config_handler import ConfigHandler
 from functools import partial
 import time
 from tools.timers import Timer
-
+from toos.logger import log_print
 
 def sub_savety_interval(func):
     def wrapper(*args, **kwargs):
@@ -56,6 +56,7 @@ class Communication:
         self.glob_qu = glob_qu
         self.tm = None
 
+    @log_print
     def pub_loop(self):
         """
         Loop to keep the process alive and handle incoming messages. Use in own thread / process.

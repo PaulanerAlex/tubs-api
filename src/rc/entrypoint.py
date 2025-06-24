@@ -4,8 +4,7 @@ import time
 import datetime
 from tools.logger import Logger
 
-if DEBUG_MODE:
-    log = Logger(__name__)
+log = Logger(__name__)
 
 def init():
     if not HEADLESS_MODE:
@@ -13,8 +12,7 @@ def init():
     else:
         _init_headless()
     
-    if DEBUG_MODE:
-        log.debug('Initialization complete.')
+    log.info('Initialization complete.')
 
 def _init_headless():
     network_init() # TODO: add error handling

@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from config.config import VEH_TYPE, DEBUG_MODE, CONF_JSON_PATH_LIST
 from tools.commander import run_shell_command as cmd
 import time
+from tools.logger import log_print
 
 def _screen_prep(func):
     """
@@ -38,6 +39,7 @@ class GUI:
         self.mp_connect_com = None
         self.glob_qu = None
 
+    @log_print
     def gui_proc_loop_car(self, mp_connect, mp_connect_com, glob_qu):
         """
         main loop to refresh the screen.
