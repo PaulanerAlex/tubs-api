@@ -67,8 +67,12 @@ class ControllerEvents:
 
         while True:
             
+            # check if the process should be terminated
             try:
-                if self.glob_qu.get(block=False).get('terminate', False):
+                gui_msg = self.glob_qu.get(block=False)
+                if DEBUG_MODE:
+                    self.log.debug_plain(f'Received message from gui: {gui_msg}')
+                if gui_msg.get('terminate', False):
                     return
             except Exception: # if the queue is empty, just continue
                 pass
