@@ -31,6 +31,7 @@ def log_print(func):
         timer = Timer(start=True)
         try:
             result = func(*args, **kwargs)
+            print(f"[DEBUG] log_print about to return from {func.__name__}")
             return result
         finally:
             # this finally block ensures logging happens even if an exception is raised.
