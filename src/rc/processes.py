@@ -49,9 +49,9 @@ def start_proc():
     if new_conf:
         new_conf = [new_conf]
         log.info(f'Restarting with new configuration: {new_conf}')
-        restart_program(new_conf)
+        restart_program(new_conf) # Restart the service to apply new configuration
     
     log.info('Shutting down the system...')
-    run_shell_command('shutdown now') # Restart the service to apply new configuration
+    run_shell_command('sudo shutdown now') # shutdown the system
 
     

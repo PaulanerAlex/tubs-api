@@ -40,6 +40,13 @@ fi
 # get latest os updates
 sudo apt update && sudo apt upgrade
 
+# Allow user to execute shutdown, reboot, and systemctl without sudo password
+SUDOERS_LINE="$USER ALL=(ALL) NOPASSWD: /sbin/shutdown, /sbin/reboot, /bin/systemctl"
+if ! sudo grep -Fxq "$SUDOERS_LINE" /etc/sudoers; then
+    echo "$SUDOERS_LINE" | sudo EDITOR='tee -a' visudo > /dev/null
+    echo "Added NOPASSWD permissions for shutdown, reboot, and systemctl to /etc/sudoers."
+fi
+
 # check if python3 is installed and version > 3.10
 if ! command -v python3 &> /dev/null; then
     echo "ERROR: python3 is not installed."
