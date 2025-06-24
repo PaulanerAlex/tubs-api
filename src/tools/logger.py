@@ -79,6 +79,8 @@ class Logger:
         """
         Saves the traceback of the exception to an own file inside the log folder.
         """
+        if DEBUG_MODE:
+            print(tb)
         file_header = f'/traceback_{dt.now().strftime("%d%m%Y-%H%M%S")}.log'
         with open(str(self.path) + file_header, 'a') as f:
             f.write(tb)
