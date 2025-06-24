@@ -7,30 +7,25 @@ from tools.timers import Timer
 
 def log_print(func):
     """
-    Decorator to print the log message before and after the function call.
+    Decorator to log the starting and ending of the function before and after the function call.
+    Also logs the elapsed time of the function call.
     """
     def wrapper(*args, **kwargs):
-        logger = Logger(func.__name__)
-        logger.info(f'Starting {func.__name__}')
-        result = func(*args, **kwargs)
-        logger.info(f'Finished {func.__name__}')
-        return result
-    return wrapper
-
-def log_print_timed(func):
-    """
-    Decorator to print the log message before and after the function call.
-    """
-
-    def wrapper(*args, **kwargs):
-        logger = Logger(func.__name__)
-        logger.info(f'Starting {func.__name__}')
+        # Check if the first argument is likely 'self' (i.e., an instance of a class)
+        if args and hasattr(args[0], '__class__') and hasattr(args[0], 'log'):
+            log = args[0].log
+        elif args and hasattr(args[0], '__class__'):
+            log = Logger(args[0].__class__.__name__)
+        else:
+            log = Logger(func.__name__)
+        log.info(f'Starting {func.__name__}')
         timer = Timer(start=True)
         result = func(*args, **kwargs)
         elapsed_time = timer.elapsed()
-        logger.info(f'Finished {func.__name__}, took {elapsed_time:.2f} seconds')
+        log.info(f'Finished {func.__name__}, took {elapsed_time:.2f} seconds')
         return result
     return wrapper
+
 
 def _write_to_log(func):
     '''

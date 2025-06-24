@@ -8,6 +8,7 @@ from functools import partial
 import time
 from tools.timers import Timer
 from tools.logger import log_print
+from tools.logger import Logger
 
 def sub_savety_interval(func):
     def wrapper(*args, **kwargs):
@@ -55,6 +56,7 @@ class Communication:
         self.mp_connect_pub = mp_connect_pub
         self.glob_qu = glob_qu
         self.tm = None
+        self.log = Logger(__name__)
 
     @log_print
     def pub_loop(self):
@@ -92,12 +94,15 @@ class Communication:
             msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else tm.last_interval_time, '', head=0, log=False, **msg)
 
             print(f'communication msg after formatting: {msg}') # TODO: change to logger but at a better place
+            if DEBUG_MODE:
+                self.log.debug(f'sending: {msg}')
 
             if DEBUG_MODE: # for debugging, pipe the send messages to the incoming messages
                 if self.mp_connect_sub:
                     self.mp_connect_sub.put({'msg': msg})
                 else:
-                    print(f'communication message received: {msg}') # TODO: change to logger
+                    self.log.debug(f'recieved: {msg}')
+                    # print(f'communication message received: {msg}') # TODO: change to logger
 
             if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
                 self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})
