@@ -36,13 +36,10 @@ def start_proc():
 
     # input process in main process until terminated by user in the gui
     input.event_loop()
-    log.info('Controller process terminated, waiting for other processes to finish...')
 
     if not HEADLESS_MODE:
         gui_proc.join()  # Wait for GUI process to finish
-        log.info('GUI process terminated.')
     com_proc.join()  # Wait for communication process to finish
-    log.info('Communication process terminated.')
 
     try:
         new_conf = glob_qu.get(block=False).get('new_config', False) # TODO: implement in other process
