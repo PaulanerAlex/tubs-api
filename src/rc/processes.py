@@ -53,6 +53,7 @@ def start_proc():
         restart_program(new_conf)
     
     log.info('Shutting down the system...')
+    time.sleep(5)
     run_shell_command('shutdown now') # Restart the service to apply new configuration
 
     
