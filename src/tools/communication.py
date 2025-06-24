@@ -58,7 +58,6 @@ class Communication:
         self.tm = None
         self.log = Logger(__name__)
 
-    @log_print
     def pub_loop(self):
         """
         Loop to keep the process alive and handle incoming messages. Use in own thread / process.

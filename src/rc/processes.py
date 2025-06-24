@@ -4,20 +4,19 @@ from tools.communication import Communication
 from config.config import COMMUNICATION_KEY, HEADLESS_MODE
 from rc.gui import GUI
 from tools.commander import restart_program, run_shell_command
-from tools.logger import Logger
+from tools.logger import Logger, log_print
 import time
 
 log = Logger(__name__)
 
+@log_print # i hate this, but i'm too lazy to refactor right now
 def start_com_process(mp_connect_sub, mp_connect_pub, glob_qu):
     """
     Start the communication process.
     """
 
     com = Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub, glob_qu=glob_qu)
-
     com.pub_loop()
-    time.sleep(1) # sleep some time for logger to finish (i know, it's not the best solution, but it works for now)
 
 def start_proc():
     child_conn_pub, parent_conn_pub = Pipe()
