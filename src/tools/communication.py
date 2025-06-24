@@ -71,6 +71,17 @@ class Communication:
                 msg = self.msgr.ping_message(tm.last_interval_time)
                 self.publish_com_msg(msg)
 
+            try:
+                gui_msg = self.glob_qu.get(block=False)
+                if gui_msg.get('terminate'):
+                    self.glob_qu.put(gui_msg)
+                    if DEBUG_MODE:
+                        self.log.debug_plain(' Received termination signal from gui.')
+                    self.session.close()
+                    return
+            except Exception: # if the queue is empty, just continue
+                pass
+
             # check if there are messages in the pipe to send
             if not self.mp_connect_pub.poll(1):                    
                 continue
@@ -80,17 +91,6 @@ class Communication:
             pressed_time = msg.get('time')
             if pressed_time:
                 msg = msg.pop('time') 
-
-            try:
-                gui_msg = self.glob_qu.get(block=False)
-                if gui_msg.get('terminate'):
-                    self.glob_qu.put(gui_msg)
-                    if DEBUG_MODE:
-                        self.log.debug_plain('Received termination signal from gui.')
-                    self.session.close()
-                    return
-            except Exception: # if the queue is empty, just continue
-                pass
 
             # TODO: add logging, so that important messages are logged, but at a better place 
             msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
