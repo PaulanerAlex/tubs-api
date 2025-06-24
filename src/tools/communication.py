@@ -65,12 +65,13 @@ class Communication:
         tm = Timer(start=True)
         pressed_time = None
         while True:
-            print(time.time() - tm.last_interval_time)
-            
+
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
-            if time.time() - tm.last_interval_time < PING_SEND_INTERVAL:
+            if time.time() - tm.last_interval_time > PING_SEND_INTERVAL:
                 msg = self.msgr.ping_message()
                 self.publish_com_msg(msg)
+                tm.interval()
+
 
             try:
                 gui_msg = self.glob_qu.get(block=False)
