@@ -11,15 +11,20 @@ def log_print(func):
     Also logs the elapsed time of the function call.
     """
     def wrapper(*args, **kwargs):
-        # Check if the first argument is likely 'self' (i.e., an instance of a class)
+        # worst code ever (too lazy)
         if args:
-            has_self = hasattr(args[0], '__dict__') and not isinstance(args[0], type) # Check if the first argument is a class instance
+            # Check if the first argument is an instance of the class that owns the method
+            func_class_name = func.__qualname__.split('.')[0]
+            has_self = args[0].__class__.__name__ == func_class_name
             if has_self and hasattr(args[0], 'log'):
                 log = args[0].log
             elif has_self:
                 log = Logger(args[0].__class__.__name__)
             else:
                 log = Logger(func.__name__)
+        else:
+            log = Logger(func.__name__)
+
         log.info(f'Starting {func.__name__}')
         timer = Timer(start=True)
         try:
