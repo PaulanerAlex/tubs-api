@@ -1,4 +1,3 @@
-import time
 from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
@@ -21,7 +20,6 @@ class ControllerEvents:
         Returns the status and the event dictionary.
         """
         while True:
-            print('loop_until_event')
             synced, ev_dict, ev_dict_gui = self.get_controller_event()
             return synced, ev_dict, ev_dict_gui
 
@@ -35,9 +33,7 @@ class ControllerEvents:
         The state is the state of the event.
         '''
         try:
-            print('get_controller_event')
             events = get_gamepad()
-            print('get_controller_event_finish')
         except UnpluggedError:
             return False, {'unplugged': True}, {'unplugged': True}
         ev_dict = {}

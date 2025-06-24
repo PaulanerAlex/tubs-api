@@ -159,7 +159,7 @@ class GUI:
         Displays the shutdown view.
         '''
 
-        self.display_text('Shutting down, pls wait at least 10 seconds...')
+        self.display_text('Press select to shut down, then pls wait at least 10 seconds...')
         time.sleep(1)  # wait a bit to show the message
 
         # terminate all processes

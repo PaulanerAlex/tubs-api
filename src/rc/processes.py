@@ -5,7 +5,6 @@ from config.config import COMMUNICATION_KEY, HEADLESS_MODE
 from rc.gui import GUI
 from tools.commander import restart_program, run_shell_command
 from tools.logger import Logger, log_print
-import time
 
 log = Logger(__name__)
 
@@ -53,7 +52,6 @@ def start_proc():
         restart_program(new_conf)
     
     log.info('Shutting down the system...')
-    time.sleep(5)
     run_shell_command('shutdown now') # Restart the service to apply new configuration
 
     
