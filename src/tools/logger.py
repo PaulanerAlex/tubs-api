@@ -25,6 +25,8 @@ def log_print(func):
         else:
             log = Logger(func.__name__)
 
+        # Debug: Print to understand what's happening
+        print(f"[DEBUG] log_print wrapper starting {func.__name__}")
         log.info(f'Starting {func.__name__}')
         timer = Timer(start=True)
         try:
@@ -34,6 +36,7 @@ def log_print(func):
             # this finally block ensures logging happens even if an exception is raised.
             # exceptions are not suppressed and will propagate to the caller.
             elapsed_time = timer.elapsed()
+            print(f"[DEBUG] log_print wrapper finishing {func.__name__}")
             log.info(f'Finished {func.__name__}, took {elapsed_time:.2f} seconds')
     return wrapper
 
@@ -53,6 +56,11 @@ def _write_to_log(func):
             os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
             with open(LOG_FILE_PATH, 'w') as f:
                 f.write(f'{output}\n')
+        except Exception as e:
+            # Debug: print any other exceptions that might be occurring
+            print(f"[LOGGER ERROR] Failed to write to log: {e}")
+            if DEBUG_MODE:
+                print(f"[LOGGER DEBUG] Output was: {output}")
         return output
     return wrapper
 
