@@ -69,6 +69,8 @@ class ControllerEvents:
             # check if the process should be terminated
             try:
                 gui_msg = self.glob_qu.get(block=False)
+                print('test')
+                print(f"Received message from gui: {gui_msg}")
                 if DEBUG_MODE:
                     self.log.debug_plain(f' Received message from gui: {gui_msg}')
                 if gui_msg.get('terminate', False):
@@ -83,9 +85,7 @@ class ControllerEvents:
             
             # display unplugged message if unplugged
             if not status and ev_dict.get('unplugged', False) == True:
-                # TODO: change to logger
-                print('controller unplugged')
-                
+                self.log.warning('Controller unplugged')                
                 if not HEADLESS_MODE:
                     self.mp_connect_gui.send(ev_dict_gui)
 
@@ -94,9 +94,7 @@ class ControllerEvents:
                     if ev_dict.get('unplugged', False) == False:
                         break
                 
-                # TODO: change to logger
-                print('controller plugged in')
-
+                self.log.info('Controller plugged in')
 
             if ev_dict.__len__() > 0:
                 self.mp_connect_com.send(ev_dict)
