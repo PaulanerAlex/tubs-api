@@ -1,3 +1,4 @@
+import time
 from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
 from multiprocessing import Pipe
@@ -71,6 +72,7 @@ class ControllerEvents:
                 gui_msg = self.glob_qu.get(block=False)
                 print('test')
                 print(f"Received message from gui: {gui_msg}")
+                time.sleep(1)
                 if DEBUG_MODE:
                     self.log.debug_plain(f' Received message from gui: {gui_msg}')
                 if gui_msg.get('terminate', False):
