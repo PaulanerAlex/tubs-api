@@ -178,7 +178,8 @@ class Communication:
         '''
         Callback function for the subscriber. Parses the 'command' message and passes the arguments to the simulation pipe.
         '''
-        print(f'communication message received: {sample.payload.to_string()}')
+        if DEBUG_MODE:
+            self.log.debug_plain(f'[RECEIVED]{sample.payload.to_string()}')
         msg = sample.payload.to_string()
         (
         head,
