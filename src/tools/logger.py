@@ -1,8 +1,6 @@
 from config.config import LOG_FILE_PATH, LOG_PATH, DEBUG_MODE
 from tools.messenger import Messenger
-import logging as log
 import os
-import linecache
 from datetime import datetime as dt
 import traceback
 from tools.timers import Timer

@@ -63,7 +63,7 @@ class ControllerEvents:
         '''
 
         while True:
-            if self.glob_qu.get(blocking=False).get('terminate', False):
+            if self.glob_qu.get(block=False).get('terminate', False):
                 return
 
             status, ev_dict, ev_dict_gui = self.loop_until_event()
