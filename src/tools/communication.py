@@ -122,6 +122,7 @@ class Communication:
                 time.sleep(0.001)
                 continue
             if self.tm.last_interval_time - time.time() > PING_SEND_INTERVAL:
+                self.log.debug('No message received for a while, sending emergency stop.')
                 self.mp_connect_sub.send({'ems':1}) # send emergency stop if no message was received for a while
             time.sleep(0.001) # TODO: find a better solution to keep the process alive
 

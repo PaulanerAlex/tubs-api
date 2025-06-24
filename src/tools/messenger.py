@@ -54,16 +54,16 @@ class Messenger:
         # TODO: add timestamp before sending to be as exact as possible
         # TODO: add micro-, milliseconds to timestamp, remove year, month, day
         if time and isinstance(time, datetime):
-            timestamp = f'[{time.strftime("%m%dT%H%M%S%f")}]'
+            timestamp = f'[{time.strftime("%dT%H%M%S%f")}]'
         elif time and isinstance(time, float):
-            timestamp = f'[{datetime.fromtimestamp(time).strftime("%m%dT%H%M%S%f")}]'
+            timestamp = f'[{datetime.fromtimestamp(time).strftime("%dT%H%M%S%f")}]'
         elif time and isinstance(time, str):
             try:
-                timestamp = f'[{datetime.strptime(time, "%m%dT%H%M%S%f").strftime("%m%dT%H%M%S%f")}]'
+                timestamp = f'[{datetime.strptime(time, "%dT%H%M%S%f").strftime("%dT%H%M%S%f")}]'
             except ValueError:
-                timestamp = f'[{datetime.now().strftime("%m%dT%H%M%S%f")}]'
+                timestamp = f'[{datetime.now().strftime("%dT%H%M%S%f")}]'
         else:
-            timestamp = f'[{datetime.now().strftime("%m%dT%H%M%S%f")}]'
+            timestamp = f'[{datetime.now().strftime("%dT%H%M%S%f")}]'
 
         # construct header
         header = f'{head}{status}{name}{timestamp}'
@@ -128,7 +128,7 @@ class Messenger:
             name = header_formatted[i]
             i += 1
 
-        timestamp = datetime.strptime(header_formatted[i], "%m%dT%H%M%S%f")
+        timestamp = datetime.strptime(header_formatted[i], "%dT%H%M%S%f")
         
         for ii in range(0, i):
             header_formatted.pop(ii) # remove the header fields except the args and kwargs
