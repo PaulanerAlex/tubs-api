@@ -50,7 +50,9 @@ def _write_to_log(func):
             if DEBUG_MODE:
                 print(output)
         except FileNotFoundError:
-            os.file.create()
+            os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
+            with open(LOG_FILE_PATH, 'w') as f:
+                f.write(f'{output}\n')
         return output
     return wrapper
 
