@@ -65,7 +65,7 @@ class Communication:
         tm = Timer(start=True)
         pressed_time = None
         while True:
-            print('test')
+            print(time.time() - tm.last_interval_time)
             
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
             if time.time() - tm.last_interval_time < PING_SEND_INTERVAL:
