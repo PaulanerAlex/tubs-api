@@ -21,6 +21,7 @@ class ControllerEvents:
         Returns the status and the event dictionary.
         """
         while True:
+            print('loop_until_event')
             synced, ev_dict, ev_dict_gui = self.get_controller_event()
             return synced, ev_dict, ev_dict_gui
 
@@ -34,6 +35,7 @@ class ControllerEvents:
         The state is the state of the event.
         '''
         try:
+            print('get_controller_event')
             events = get_gamepad()
         except UnpluggedError:
             return False, {'unplugged': True}, {'unplugged': True}
@@ -67,24 +69,20 @@ class ControllerEvents:
         '''
 
         while True:
+
+            status, ev_dict, ev_dict_gui = self.loop_until_event()
+
             # check if the process should be terminated
             try:
                 gui_msg = self.glob_qu.get(block=False)
-                print('test')
-                print(f"Received message from gui: {gui_msg}")
-                time.sleep(1)
                 if DEBUG_MODE:
                     self.log.debug_plain(f' Received message from gui: {gui_msg}')
                 if gui_msg.get('terminate', False):
-                    print("[DEBUG] About to return from event_loop due to terminate message")
                     self.glob_qu.put(gui_msg)
-                    print("[DEBUG] Just before return from event_loop")
                     return
             except Exception: # if the queue is empty, just continue
                 pass
 
-            status, ev_dict, ev_dict_gui = self.loop_until_event()
-            
             # display unplugged message if unplugged
             if not status and ev_dict.get('unplugged', False) == True:
                 self.log.warning('Controller unplugged')                
