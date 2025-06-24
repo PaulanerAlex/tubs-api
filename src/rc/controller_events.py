@@ -13,16 +13,6 @@ class ControllerEvents:
         self.cnf = ConfigHandler(communication=True)
         self.log = Logger(__name__)
 
-    def loop_until_event(self): # TODO: remove unnessary function
-        """
-        Loop until an event is received from the controller.
-        Should be called in an own process.
-        Returns the status and the event dictionary.
-        """
-        while True:
-            synced, ev_dict, ev_dict_gui = self.get_controller_event()
-            return synced, ev_dict, ev_dict_gui
-
     def get_controller_event(self):
         '''
         Get the controller event and return the event type and state.
@@ -42,7 +32,6 @@ class ControllerEvents:
             try:
                 code, max_val = self.cnf.get_com_encoding(event.code)
                 ev_dict[code] = event.state / max_val if max_val else event.state
-                # TODO: add timestamp
             except KeyError:
                 pass
             
@@ -67,7 +56,7 @@ class ControllerEvents:
 
         while True:
 
-            status, ev_dict, ev_dict_gui = self.loop_until_event()
+            status, ev_dict, ev_dict_gui = self.get_controller_event()
 
             # check if the process should be terminated
             try:
@@ -87,7 +76,7 @@ class ControllerEvents:
                     self.mp_connect_gui.send(ev_dict_gui)
 
                 while True:
-                    status, ev_dict, ev_dict_gui = self.loop_until_event()
+                    status, ev_dict, ev_dict_gui = self.get_controller_event()
                     if ev_dict.get('unplugged', False) == False:
                         break
                 
@@ -100,4 +89,4 @@ class ControllerEvents:
                 self.mp_connect_gui.send(ev_dict_gui)
 
 if __name__ == "__main__":
-    ControllerEvents().loop_until_event()
+    ControllerEvents().get_controller_event()

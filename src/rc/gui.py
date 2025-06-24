@@ -1,7 +1,7 @@
 from luma.core.interface.serial import i2c
 from luma.oled.device import ssd1306
 from PIL import Image, ImageDraw, ImageFont
-from config.config import VEH_TYPE, DEBUG_MODE, CONF_JSON_PATH_LIST
+from config.config import VEH_TYPE, DEBUG_MODE, CONF_JSON_PATH_LIST, I2C_ADDRESS, I2C_PORT
 from tools.commander import run_shell_command as cmd
 import time
 from tools.logger import log_print
@@ -21,7 +21,7 @@ def _screen_prep(func):
 
 
 class GUI:
-    def __init__(self, i2c_port=1, i2c_address=0x3C): # TODO: add global var for i2c adress that is collected dynamically
+    def __init__(self, i2c_port=I2C_PORT, i2c_address=I2C_ADDRESS):
         serial = i2c(port=i2c_port, address=i2c_address)
         self.display = ssd1306(serial)
         self.height = self.display.height
@@ -33,7 +33,8 @@ class GUI:
         self.menu_options = {
             'recieving view' : self.display_com_msg_view,
             'change config file' : self.display_change_config_view,
-            'shutdown' : self.display_shutdown_view
+            'shutdown' : self.display_shutdown_view,
+            'toggle ssh' : self.display_toggle_ssh_view,
         } # TODO: add option to enable/disable ssh server
         self.mp_connect = None
         self.mp_connect_com = None
@@ -75,7 +76,7 @@ class GUI:
                 acc = data.get('acc', acc)
                 dcc = data.get('dcc', dcc)
                 steer = data.get('str', steer)
-                if data.get('unplugged') == True: # FIXME: this has to be implemented in the other process
+                if data.get('unplugged') == True:
                     self.display_text('Controller unplugged')
                 elif data.get('gui_menu'):
                     self.menu_state = 'options_menu'
@@ -165,6 +166,22 @@ class GUI:
         # terminate all processes
         self.glob_qu.put({'terminate': True})
         self.terminate = True
+
+    def display_toggle_ssh_view(self):
+        '''
+        Toggles the ssh server on or off.
+        '''
+        self.display_text('Toggling ssh server...')
+        result = cmd('sudo systemctl is-active ssh')
+        if result.strip() == 'active':
+            cmd('sudo systemctl stop ssh')
+            self.log.info('Stopped ssh server by user')
+            self.display_text('SSH server turned off')
+        else:
+            cmd('sudo systemctl start ssh')
+            self.log.info('Started ssh server by user')
+            self.display_text('SSH server turned on')
+        time.sleep(2)
 
     def menu_loop(self, options):
         '''

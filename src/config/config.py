@@ -36,3 +36,6 @@ VEH_TYPE, COMMUNICATION_KEY, DEBUG_MODE, HEADLESS_MODE = ConfigHandler.init_glob
 
 LOG_FILE_PATH = ROOT_PATH.joinpath('log', f"{COMMUNICATION_KEY.lower() if IS_VEHICLE else 'rc'}.log")
 LOG_PATH = ROOT_PATH.joinpath('log')
+
+I2C_ADDRESS = 0x3C
+I2C_PORT = 1
