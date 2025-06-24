@@ -12,12 +12,14 @@ def log_print(func):
     """
     def wrapper(*args, **kwargs):
         # Check if the first argument is likely 'self' (i.e., an instance of a class)
-        if args and hasattr(args[0], '__class__') and hasattr(args[0], 'log'):
-            log = args[0].log
-        elif args and hasattr(args[0], '__class__'):
-            log = Logger(args[0].__class__.__name__)
-        else:
-            log = Logger(func.__name__)
+        if args:
+            has_self = hasattr(args[0], '__dict__') and not isinstance(args[0], type) # Check if the first argument is a class instance
+            if has_self and hasattr(args[0], 'log'):
+                log = args[0].log
+            elif has_self:
+                log = Logger(args[0].__class__.__name__)
+            else:
+                log = Logger(func.__name__)
         log.info(f'Starting {func.__name__}')
         timer = Timer(start=True)
         try:
