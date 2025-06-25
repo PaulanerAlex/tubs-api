@@ -51,12 +51,12 @@ class CarSimulation:
     def steer_left(self, amount=5):
         if self.car_speed > 0:
             self.steering_angle = np.deg2rad(amount)
-            self.car_angle += self.steering_angle
+            self.car_angle -= self.steering_angle
 
     def steer_right(self, amount=5):
         if self.car_speed > 0:
             self.steering_angle = np.deg2rad(-amount)
-            self.car_angle -= self.steering_angle
+            self.car_angle += self.steering_angle
     
     def emergency_stop(self):
         """Immediately stop the car."""

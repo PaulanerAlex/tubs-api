@@ -159,10 +159,10 @@ class Messenger:
         
         if 'ACC' in kwargs.keys():
             amount = float(kwargs['ACC'])
-            command_dict['accelerate'] = amount / 10
+            command_dict['accelerate'] = amount / 30
         if 'DCC' in kwargs.keys():
             amount = float(kwargs['DCC'])
-            command_dict['brake'] = amount / 10
+            command_dict['brake'] = amount / 15
         if 'STR' in kwargs.keys():
             amount = float(kwargs['STR'])
             if amount < 0:
@@ -171,5 +171,7 @@ class Messenger:
                 command_dict['steer_right'] = amount * 10
 
         # TODO: add support for buttons
+        # TODO: make ems work
+        # TODO: send back heartbeat message (evtl. in reply to the ping message) 
 
         return command_dict    
