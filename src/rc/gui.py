@@ -64,7 +64,7 @@ class GUI:
             # Drain the queue to get the latest message
             latest_data = None
             
-            while mp_connect.poll():
+            if mp_connect.poll():
                 latest_data = mp_connect.recv()
             
             try:
