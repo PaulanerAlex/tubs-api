@@ -60,7 +60,7 @@ class CarSimulation:
     
     def emergency_stop(self):
         """Immediately stop the car."""
-        self.brake(999)
+        self.brake(0.001)
         while True:
             if self.car_speed <= 0:
                 self.car_speed = 0
@@ -87,7 +87,10 @@ class CarSimulation:
             elif command == 'steer_right':
                 self.steer_right(val)
             elif command == 'ems':
-                self.emergency_stop()
+                if val:
+                    self.emergency_stop()
+                else:
+                    print("Emergency stop deactivated.")
             elif command == 'exit':
                 plt.close()  # Close the plot to end simulation
 

@@ -154,9 +154,10 @@ class Messenger:
         pass
 
     def parse_commands_sim(self, kwargs):
-        
+
+        self.ems = None if not hasattr(self, 'ems') else self.ems
+
         command_dict = {}
-        
         if 'ACC' in kwargs.keys():
             amount = float(kwargs['ACC'])
             command_dict['accelerate'] = amount / 30
@@ -169,6 +170,9 @@ class Messenger:
                 command_dict['steer_left'] = amount * 10
             elif amount > 0:
                 command_dict['steer_right'] = amount * 10
+        if 'EMS' in kwargs.keys() and int(kwargs['EMS']) == 1:
+            self.ems = not self.ems if self.ems is not None else True
+            command_dict['ems'] = self.ems
 
         # TODO: add support for buttons
         # TODO: make ems work
