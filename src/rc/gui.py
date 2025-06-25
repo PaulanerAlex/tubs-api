@@ -84,9 +84,8 @@ class GUI:
                     self.display_options_menu()
                     if self.terminate:
                         return
-                else:
-                    if data_com:
-                        freq = data_com.get('!gui_send_freq', freq)
+            if data_com:
+                freq = data_com.get('!gui_send_freq', freq)
 
             self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq}Hz' if freq else 'N/A', 'acc': acc.__round__(1), 'dcc': dcc.__round__(1), 'str': steer.__round__(1)})
 
