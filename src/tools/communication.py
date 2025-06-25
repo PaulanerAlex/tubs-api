@@ -1,4 +1,3 @@
-import datetime
 import zenoh
 from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICLE, DEBUG_MODE, HEADLESS_MODE, PING_SEND_INTERVAL, SUB_TIMEOUT
 from tools.messenger import Messenger
@@ -6,6 +5,7 @@ from multiprocessing import Pipe
 from tools.config_handler import ConfigHandler
 from functools import partial
 import time
+from datetime import datetime
 from tools.timers import Timer
 from tools.logger import log_print
 from tools.logger import Logger
@@ -95,7 +95,7 @@ class Communication:
 
             # TODO: add logging, so that important messages are logged, but at a better place 
             msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
-            msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else time.now(), '', head=0, log=False, **msg)
+            msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else datetime.now(), '', head=0, log=False, **msg)
 
             if DEBUG_MODE:
                 self.log.debug_plain(f'[SENDING]{msg}')
