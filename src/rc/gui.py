@@ -88,8 +88,10 @@ class GUI:
                 else:
                     if data_com:
                         freq = data_com.get('!gui_send_freq', freq)
-                    self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq}Hz' if freq else 'N/A', 'acc': acc.__round__(1), 'dcc': dcc.__round__(1), 'str': steer.__round__(1)})
-    
+
+            self.display_data_screen_car(0 + acc - dcc, steer, {'frq': f'{freq}Hz' if freq else 'N/A', 'acc': acc.__round__(1), 'dcc': dcc.__round__(1), 'str': steer.__round__(1)})
+
+                    
     def display_options_menu(self):
         '''
         Displays the options available from the data view screen,
