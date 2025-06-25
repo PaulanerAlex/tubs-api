@@ -64,9 +64,10 @@ class GUI:
             # Drain the queue to get the latest message
             latest_data = None
             
-            if mp_connect.poll():
+            while mp_connect.poll():
                 latest_data = mp_connect.recv()
-            
+            print('test')
+
             try:
                 data_com = mp_connect_com.get(block=False)
             except Exception: # if the queue is empty
