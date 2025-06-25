@@ -13,14 +13,14 @@ def run_shell_command(command, capture_exit_code_3=False):
     try:
         result = subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
         output = result.stdout.strip()
-        log.info(f"Command '{command}' executed successfully. output: {output}")
+        from config.config import DEBUG_MODE
+        if DEBUG_MODE:
+            log.debug(f"Command '{command}' executed successfully. output: {output}")
         return output
     except subprocess.CalledProcessError as e:
-        
         if e.returncode == 3 and capture_exit_code_3:
             log.info(f"Command '{command}' executed successfully.")
             return ''
-
         log.error(f"Command '{command}' failed with error: {e}")
         return None
 

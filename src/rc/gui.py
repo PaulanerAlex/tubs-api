@@ -211,9 +211,9 @@ class GUI:
                     elif key == 'gui_ud' and value < 0:
                         selected_index = __sub_ind(selected_index)
                     elif key == 'gui_du' and value > 0:
-                        selected_index = __add_ind(selected_index)
-                    elif key == 'gui_du' and value < 0:
                         selected_index = __sub_ind(selected_index)
+                    elif key == 'gui_du' and value < 0:
+                        selected_index = __add_ind(selected_index)
 
                     if key == 'gui_select':
                         return selected_index
