@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from config.config import VEH_TYPE, DEBUG_MODE, CONF_JSON_PATH_LIST, I2C_ADDRESS, I2C_PORT
 from tools.commander import run_shell_command as cmd
 import time
-from tools.logger import log_print
+from tools.logger import log_print, Logger
 
 def _screen_prep(func):
     """
@@ -40,6 +40,7 @@ class GUI:
         self.mp_connect_com = None
         self.glob_qu = None
         self.terminate = False
+        self.log = Logger(__name__)
 
     @log_print
     def gui_proc_loop_car(self, mp_connect, mp_connect_com, glob_qu):
@@ -183,7 +184,7 @@ class GUI:
             cmd('sudo systemctl start ssh')
             self.log.info('Started ssh server by user')
             self.display_text('SSH server turned on')
-        time.sleep(2)
+        time.sleep(1)
 
     def menu_loop(self, options):
         '''
