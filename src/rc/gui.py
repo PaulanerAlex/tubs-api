@@ -66,7 +66,6 @@ class GUI:
             
             while mp_connect.poll():
                 latest_data = mp_connect.recv()
-            print('test')
 
             try:
                 data_com = mp_connect_com.get(block=False)
