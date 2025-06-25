@@ -4,6 +4,7 @@ import os
 from datetime import datetime as dt
 import traceback
 from tools.timers import Timer
+import subprocess
 
 def log_print(func):
     """
@@ -39,22 +40,43 @@ def log_print(func):
             log.info(f'Finished {func.__name__}, took {elapsed_time:.2f} seconds')
     return wrapper
 
+def _truncate_log_file(self):
+    try:
+        line_count = int(subprocess.check_output(['wc', '-l', LOG_FILE_PATH]).decode().strip().split()[0])
+    except Exception:
+        line_count = None
+    if line_count is not None and line_count > 10000:
+        # If the log file has more than 10,000 lines, delete the oldest 1,000 lines
+        trunc_count = 1000 if line_count < 20000 else 10000
+        with open(LOG_FILE_PATH, 'r') as f:
+            lines = f.readlines()
+        with open(LOG_FILE_PATH, 'w') as f:
+            f.writelines(lines[-trunc_count:])
+        with open(LOG_FILE_PATH, 'a') as f:
+            f.write(self.msgr.format_message(status = 2, time=None, message='Log file truncated to last 1000 lines.', log=True))
 
 def _write_to_log(func):
     '''
     Decorator to write to log
     '''
     def wrapper(*args, **kwargs):
+        self = args[0]
+        if self.write_counter >= 1000:
+            _truncate_log_file(self)
+            self.write_counter = 1
+
         output = func(*args, **kwargs)
         try: 
             with open(LOG_FILE_PATH, 'a') as f:
                 f.write(f'{output}\n')
+                self.write_counter += 1
             if DEBUG_MODE:
                 print(output)
         except FileNotFoundError:
             os.makedirs(os.path.dirname(LOG_FILE_PATH), exist_ok=True)
             with open(LOG_FILE_PATH, 'w') as f:
                 f.write(f'{output}\n')
+                self.write_counter += 1
         except Exception as e:
             # Debug: print any other exceptions that might be occurring
             print(f"[LOGGER ERROR] Failed to write to log: {e}")
@@ -69,6 +91,7 @@ class Logger:
         self.msgr = Messenger(name=name)
         self.file_path = LOG_FILE_PATH if not path else path
         self.path = LOG_PATH
+        self.write_counter = 0
 
     @_write_to_log
     def debug(self, msg, time=None):

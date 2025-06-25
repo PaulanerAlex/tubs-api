@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 from matplotlib.animation import FuncAnimation
+from tools.logger import Logger
 
 class CarSimulation:
     def __init__(self, pipe_conn, 
@@ -24,6 +25,7 @@ class CarSimulation:
         self.car_pos = np.array([0.0, 0.0])
         self.car_angle = 0.0
         self.car_speed = 0.0
+        self.ems = False  # Emergency stop flag
 
         # Plot setup
         self.fig, self.ax = plt.subplots()
@@ -39,12 +41,19 @@ class CarSimulation:
         # Start animation
         self.ani = FuncAnimation(self.fig, self.animate, interval=50, blit=False)
 
+        self.log = Logger(__name__)
+
     # --- Car Control Methods ---
     def accelerate(self, amount=0.1):
+        if self.ems:
+            return
         self.acceleration = amount
         self.car_speed = min(self.car_speed + self.acceleration, self.max_speed)
 
     def brake(self, amount=0.1):
+        if self.ems and self.car_speed <= 0:
+            self.car_speed = 0
+            return
         self.deceleration = amount
         self.car_speed = max(self.car_speed - self.deceleration, -self.max_speed / 2)
 
@@ -58,16 +67,17 @@ class CarSimulation:
             self.steering_angle = np.deg2rad(-amount)
             self.car_angle += self.steering_angle
     
-    def emergency_stop(self):
+    def emergency_stop(self, release=False):
         """Immediately stop the car."""
-        self.brake(0.001)
-        while True:
-            if self.car_speed <= 0:
-                self.car_speed = 0
-                break
-            self.update_car()
-            print('EMERGENCY STOP: Car stopped...')
-            raise SystemExit("Emergency stop triggered. Simulation ended.")
+        self.log.warning('Emergency stop activated! Car is stopping...')
+        if release:
+            self.log.warning('Emergency stop released. Resuming normal operation.')
+            self.acceleration = 0
+            self.deceleration = 0
+            self.car_speed = 0
+            self.ems = False
+            return
+        self.ems = True
 
     # --- Animation Loop ---
     def animate(self, frame):
@@ -78,7 +88,12 @@ class CarSimulation:
             if cmd_dict.__len__() == 0:
                 continue
             command, val = list(cmd_dict.items())[0]  # Get the command and value
-            if command == 'accelerate':
+            if command == 'ems':
+                if val:
+                    self.emergency_stop()
+                else:
+                    self.emergency_stop(release=True)
+            elif command == 'accelerate':
                 self.accelerate(val)
             elif command == 'brake':
                 self.brake(val)
@@ -86,19 +101,11 @@ class CarSimulation:
                 self.steer_left(val)
             elif command == 'steer_right':
                 self.steer_right(val)
-            elif command == 'ems':
-                if val:
-                    self.emergency_stop()
-                else:
-                    print("Emergency stop deactivated.")
             elif command == 'exit':
                 plt.close()  # Close the plot to end simulation
 
-        # Apply friction
-        if self.car_speed > 0:
-            self.car_speed = max(self.car_speed - self.friction, 0)
-        elif self.car_speed < 0:
-            self.car_speed = min(self.car_speed + self.friction, 0)
+        if self.ems:
+            self.brake(0.03)  # If emergency stop is active, apply brake
 
         # Update position
         self.update_car()
@@ -106,6 +113,12 @@ class CarSimulation:
         return self.car_arrow
 
     def update_car(self):
+
+        # Apply friction
+        if self.car_speed > 0:
+            self.car_speed = max(self.car_speed - self.friction, 0)
+        elif self.car_speed < 0:
+            self.car_speed = min(self.car_speed + self.friction, 0)
 
         # only steer if the car is moving
         direction = np.array([np.cos(self.car_angle), np.sin(self.car_angle)])
