@@ -71,6 +71,8 @@ class Communication:
                 msg = self.msgr.ping_message()
                 self.publish_com_msg(msg)
                 tm.interval()
+                if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
+                    self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})
 
             try:
                 gui_msg = self.glob_qu.get(block=False)
