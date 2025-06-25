@@ -68,7 +68,6 @@ class Communication:
 
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
             if time.time() - tm.last_interval_time > PING_SEND_INTERVAL:
-                print(time.time() - tm.last_interval_time)
                 msg = self.msgr.ping_message()
                 self.publish_com_msg(msg)
                 tm.interval()
@@ -85,7 +84,7 @@ class Communication:
                 pass
 
             # check if there are messages in the pipe to send
-            if not self.mp_connect_pub.poll(1):                    
+            if not self.mp_connect_pub.poll(PING_SEND_INTERVAL / 2):                    
                 continue
 
             msg = self.mp_connect_pub.recv()
