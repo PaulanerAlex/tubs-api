@@ -58,6 +58,7 @@ class Communication:
         self.tm = None
         self.log = Logger(__name__)
 
+    @log_print
     def pub_loop(self):
         """
         Loop to keep the process alive and handle incoming messages. Use in own thread / process.
@@ -70,9 +71,9 @@ class Communication:
             if time.time() - tm.last_interval_time > PING_SEND_INTERVAL:
                 msg = self.msgr.ping_message()
                 self.publish_com_msg(msg)
-                tm.interval()
                 if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
                     self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})
+                tm.interval()
 
             try:
                 gui_msg = self.glob_qu.get(block=False)

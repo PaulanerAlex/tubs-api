@@ -26,8 +26,6 @@ def log_print(func):
         else:
             log = Logger(func.__name__)
 
-        # Debug: Print to understand what's happening
-        print(f"[DEBUG] log_print wrapper starting {func.__name__}")
         log.info(f'Starting {func.__name__}')
         timer = Timer(start=True)
         try:
@@ -45,9 +43,9 @@ def _truncate_log_file(self):
         line_count = int(subprocess.check_output(['wc', '-l', LOG_FILE_PATH]).decode().strip().split()[0])
     except Exception:
         line_count = None
-    if line_count is not None and line_count > 10000:
+    if line_count is not None and line_count >= 10000:
         # If the log file has more than 10,000 lines, delete the oldest 1,000 lines
-        trunc_count = 1000 if line_count < 20000 else 10000
+        trunc_count = 1000 if line_count < 20000 else line_count - 9000
         with open(LOG_FILE_PATH, 'r') as f:
             lines = f.readlines()
         with open(LOG_FILE_PATH, 'w') as f:

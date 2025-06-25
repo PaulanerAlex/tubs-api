@@ -60,6 +60,7 @@ class GUI:
         while True:
             if not self.menu_state:
                 self.menu_state = self.homescreen
+            
             # Drain the queue to get the latest message
             latest_data = None
             

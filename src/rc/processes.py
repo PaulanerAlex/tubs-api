@@ -8,7 +8,6 @@ from tools.logger import Logger, log_print
 
 log = Logger(__name__)
 
-@log_print # i hate this, but i'm too lazy to refactor right now
 def start_com_process(mp_connect_sub, mp_connect_pub, glob_qu):
     """
     Start the communication process.
