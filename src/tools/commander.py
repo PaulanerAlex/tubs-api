@@ -16,7 +16,7 @@ def run_shell_command(command):
         log.info(f"Command '{command}' executed successfully. output: {output}")
         return output
     except subprocess.CalledProcessError as e:
-        log.error(f"Command '{command}' failed with error: {e.stderr.strip()}")
+        log.error(f"Command '{command}' failed with error: {e}")
         return None
 
 def restart_program(args=None):
