@@ -9,12 +9,14 @@ def run_shell_command(command):
     """
     Run a shell command and return the output.
     """
+    log = Logger(__name__)
     try:
         result = subprocess.run(command, shell=True, check=True, text=True, capture_output=True)
-        return result.stdout.strip()
+        output = result.stdout.strip()
+        log.info(f"Command '{command}' executed successfully. output: {output}")
+        return output
     except subprocess.CalledProcessError as e:
-        # TODO: change following to logger
-        Logger(__name__).error(f"Command '{command}' failed with error: {e.stderr.strip()}")
+        log.error(f"Command '{command}' failed with error: {e.stderr.strip()}")
         return None
 
 def restart_program(args=None):

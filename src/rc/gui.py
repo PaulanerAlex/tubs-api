@@ -186,7 +186,7 @@ class GUI:
             command_result = cmd('sudo systemctl start ssh')
             self.log.info('Started ssh server by user')
             self.display_text('SSH server turned on')
-        time.sleep(1)
+        time.sleep(2)
 
     def menu_loop(self, options):
         '''
