@@ -5,7 +5,7 @@ import sys
 import os
 from tools.logger import Logger
 
-def run_shell_command(command):
+def run_shell_command(command, capture_exit_code_3=False):
     """
     Run a shell command and return the output.
     """
@@ -16,6 +16,11 @@ def run_shell_command(command):
         log.info(f"Command '{command}' executed successfully. output: {output}")
         return output
     except subprocess.CalledProcessError as e:
+        
+        if e.returncode == 3 and capture_exit_code_3:
+            log.info(f"Command '{command}' executed successfully.")
+            return ''
+
         log.error(f"Command '{command}' failed with error: {e}")
         return None
 

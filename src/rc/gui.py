@@ -175,7 +175,7 @@ class GUI:
         Toggles the ssh server on or off.
         '''
         self.display_text('Toggling ssh server...')
-        is_active = cmd('sudo systemctl is-active ssh')
+        is_active = cmd('sudo systemctl is-active ssh', capture_exit_code_3=True)
         if is_active is None:
             self.display_text('Command failed, check the logs')
         elif is_active.strip() == 'active':
