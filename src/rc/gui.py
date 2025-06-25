@@ -175,13 +175,13 @@ class GUI:
         Toggles the ssh server on or off.
         '''
         self.display_text('Toggling ssh server...')
-        result = cmd('sudo systemctl is-active ssh')
-        if result.strip() == 'active':
-            cmd('sudo systemctl stop ssh')
-            self.log.info('Stopped ssh server by user')
+        is_active = cmd('sudo systemctl is-active ssh')
+        if is_active.strip() == 'active':
+            command_result = cmd('sudo systemctl stop ssh')
+            self.log.info(f'Stopped ssh server by user: {command_result}')
             self.display_text('SSH server turned off')
         else:
-            cmd('sudo systemctl start ssh')
+            command_result = cmd('sudo systemctl start ssh')
             self.log.info('Started ssh server by user')
             self.display_text('SSH server turned on')
         time.sleep(1)
