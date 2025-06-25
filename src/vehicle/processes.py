@@ -12,7 +12,7 @@ def start_com_process(mp_connect_sub, mp_connect_pub):
     """
 
     com = Communication(key=COMMUNICATION_KEY, mp_connect_sub=mp_connect_sub, mp_connect_pub=mp_connect_pub)
-    com.sub_loop()
+    com.sub_loop_sim()
 
 def debug_control_process(conn): # for controlling without wireless connection
     

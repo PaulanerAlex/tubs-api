@@ -16,7 +16,6 @@ def sub_savety_interval(func):
         if self.tm is None:
             self.tm = Timer(start=True)
         self.tm.interval() # update the last interval time to the current time
-        print(self.tm.last_interval_time)
         output = func(*args, **kwargs)
         return output
     return wrapper
@@ -69,6 +68,7 @@ class Communication:
 
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
             if time.time() - tm.last_interval_time > PING_SEND_INTERVAL:
+                print(time.time() - tm.last_interval_time)
                 msg = self.msgr.ping_message()
                 self.publish_com_msg(msg)
                 tm.interval()
@@ -110,12 +110,13 @@ class Communication:
             self.publish_com_msg(msg)
             tm.interval()
 
-    def sub_loop(self):
+    def sub_loop_sim(self):
         '''
         Keeps process alive.
         Incoming messages are handled in the listener_callback function.
         '''
-        self.tm = Timer(start=True)
+        if not self.tm:
+            self.tm = Timer(start=True)
         while True:
             # FIXME: check if this method works with the listener callbacks
             if self.tm is None:
@@ -125,7 +126,7 @@ class Communication:
                 self.log.debug('No message received for a while, sending emergency stop.')
                 self.mp_connect_sub.send({'ems':1}) # send emergency stop if no message was received for a while
                 return
-            time.sleep(0.001) # TODO: find a better solution to keep the process alive
+            time.sleep(0.1) # TODO: find a better solution to keep the process alive
 
     def publish_com_msg(self, msg: str):
         """
