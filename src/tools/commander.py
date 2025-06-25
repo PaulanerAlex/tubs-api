@@ -3,6 +3,7 @@
 import subprocess
 import sys
 import os
+from tools.logger import Logger
 
 def run_shell_command(command):
     """
@@ -13,7 +14,7 @@ def run_shell_command(command):
         return result.stdout.strip()
     except subprocess.CalledProcessError as e:
         # TODO: change following to logger
-        print(f"Command '{command}' failed with error: {e.stderr.strip()}")
+        Logger(__name__).error(f"Command '{command}' failed with error: {e.stderr.strip()}")
         return None
 
 def restart_program(args=None):

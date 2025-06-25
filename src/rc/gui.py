@@ -176,7 +176,9 @@ class GUI:
         '''
         self.display_text('Toggling ssh server...')
         is_active = cmd('sudo systemctl is-active ssh')
-        if is_active.strip() == 'active':
+        if is_active is None:
+            self.display_text('Command failed, check the logs')
+        elif is_active.strip() == 'active':
             command_result = cmd('sudo systemctl stop ssh')
             self.log.info(f'Stopped ssh server by user: {command_result}')
             self.display_text('SSH server turned off')
