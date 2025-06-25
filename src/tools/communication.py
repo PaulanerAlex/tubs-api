@@ -84,7 +84,7 @@ class Communication:
                 pass
 
             # check if there are messages in the pipe to send
-            if not self.mp_connect_pub.poll(PING_SEND_INTERVAL / 2):                    
+            if not self.mp_connect_pub.poll():                    
                 continue
 
             msg = self.mp_connect_pub.recv()
