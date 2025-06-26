@@ -3,7 +3,7 @@ from tools.commander import run_shell_command as cmd
 from tools.timers import timer
 from tools.config_handler import ConfigHandler
 from tools.logger import Logger, log_print
-from config.config import DEBGUG_MODE
+from config.config import DEBUG_MODE
 
 def network_init():
     """
@@ -63,7 +63,7 @@ class NetworkHandler:
             return None
         else:
             ssid_list = [item.lstrip('SSID:').strip('"\n') for item in result]
-            if DEBGUG_MODE:
+            if DEBUG_MODE:
                 self.log.debug(f"Got available ssids: {ssid_list}")
     
     @log_print
