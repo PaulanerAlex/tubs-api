@@ -39,11 +39,9 @@ class Communication:
 
         self.pub = self.session.declare_publisher(pub_topic)
         
-        if IS_VEHICLE and DEBUG_MODE:
+        if IS_VEHICLE:
             self.sub = self.session.declare_subscriber(sub_topic, self.listener_callback_sim)
-        elif IS_RC and DEBUG_MODE: # for debugging, incoming messages will be outgoing messages
-            self.sub = None
-        else:
+        elif IS_RC:
             self.sub = self.session.declare_subscriber(sub_topic, partial(self.listener_callback, func=listener_func))
         
         self.msgr = Messenger(COMMUNICATION_KEY) # name will not be shown in the communication messages

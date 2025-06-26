@@ -77,9 +77,6 @@ class Messenger:
 
         message = f'{header}{message}'
 
-        if log and status == 1 and DEBUG_MODE:
-            print(message)
-
         return message
     
     def ping_message(self, time: datetime = None):

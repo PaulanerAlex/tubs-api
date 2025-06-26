@@ -79,7 +79,6 @@ class GUI:
                 if data.get('unplugged') == True:
                     self.display_text('Controller unplugged')
                     unplugged = True
-                    data.pop('unplugged', None)
                     continue
                 elif data.get('gui_menu'):
                     self.menu_state = 'options_menu'

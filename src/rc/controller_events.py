@@ -1,6 +1,5 @@
 from inputs import get_gamepad
 from tools.config_handler import ConfigHandler
-from multiprocessing import Pipe
 from inputs import UnpluggedError
 from config.config import HEADLESS_MODE, DEBUG_MODE
 from tools.logger import Logger, log_print
