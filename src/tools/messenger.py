@@ -36,12 +36,10 @@ class Messenger:
         - 4: `CRITICAL`
         '''
 
-        # TODO: find schema for telemetry message
-
         if '[' in message or ']' in message:
             raise ValueError("Message should not contain '[' or ']'")
 
-        # add head to header # FIXME: there cold be a boolian error here
+        # add head to header
         if not log:
             head = f'[{self.head_def[head]}]'
             name = ''
@@ -51,8 +49,6 @@ class Messenger:
             name = f'[{str(self.name).upper()}]' 
             status = f'[{self.status_def[status]}]'
 
-        # TODO: add timestamp before sending to be as exact as possible
-        # TODO: add micro-, milliseconds to timestamp, remove year, month, day
         if time and isinstance(time, datetime):
             timestamp = f'[{time.strftime("%dT%H%M%S%f")}]'
         elif time and isinstance(time, float):
@@ -174,8 +170,6 @@ class Messenger:
             self.ems = not self.ems if self.ems is not None else True
             command_dict['ems'] = self.ems
 
-        # TODO: add support for buttons
-        # TODO: make ems work
-        # TODO: send back heartbeat message (evtl. in reply to the ping message) 
+        # TODO: send back heartbeat message (but not here) (evtl. in reply to the ping message) 
 
         return command_dict    

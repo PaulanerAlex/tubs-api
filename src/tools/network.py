@@ -2,6 +2,8 @@ import os
 from tools.commander import run_shell_command as cmd
 from tools.timers import timer
 from tools.config_handler import ConfigHandler
+from tools.logger import Logger, log_print
+from config.config import DEBGUG_MODE
 
 def network_init():
     """
@@ -19,6 +21,7 @@ class NetworkHandler:
         self.password = password
         self.interface = interface
         self.ssid = ssid
+        self.log = Logger(__name__)
 
         # when interface is set to 'auto' in config
         if not interface:
@@ -53,17 +56,17 @@ class NetworkHandler:
         result = cmd(command.format(self.interface, self.ssid))
 
         if not result:
-            # TODO: change following to logger
-            print("No networks found or error in command")
+            self.log.error("No networks found or command failed.")
             return None
 
         if "Device or resource busy" in result:
             return None
         else:
             ssid_list = [item.lstrip('SSID:').strip('"\n') for item in result]
-            print(f"Successfully get ssids {str(ssid_list)}")
+            if DEBGUG_MODE:
+                self.log.debug(f"Got available ssids: {ssid_list}")
     
-    @timer
+    @log_print
     def connect_to_network(self, ssid):
         """
         Connect to the given network.
@@ -74,12 +77,10 @@ class NetworkHandler:
         try:
             if cmd(command) != 0: # run the command and check connection
                 raise Exception()
-            # TODO: change following to logger
-            print(f"Connected to ssid : {self.ssid}")
+            self.log.info(f"Connected to ssid : {self.ssid}")
             return True
         except Exception as e:
-            # TODO: change following to logger
-            print(f"Couldn't connect to ssid : {self.ssid}. {e}")
+            self.log.error(f"Couldn't connect to ssid : {self.ssid}. -> {e}")
             return False
         
     def get_wifi_connection(self):

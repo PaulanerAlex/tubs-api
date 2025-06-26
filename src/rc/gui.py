@@ -35,7 +35,7 @@ class GUI:
             'change config file' : self.display_change_config_view,
             'shutdown' : self.display_shutdown_view,
             'toggle ssh' : self.display_toggle_ssh_view,
-        } # TODO: add option to enable/disable ssh server
+        }
         self.mp_connect = None
         self.mp_connect_com = None
         self.glob_qu = None
@@ -80,11 +80,13 @@ class GUI:
                 steer = data.get('str', steer)
                 if data.get('unplugged') == True:
                     self.display_text('Controller unplugged')
+                    continue
                 elif data.get('gui_menu'):
                     self.menu_state = 'options_menu'
                     self.display_options_menu()
                     if self.terminate:
                         return
+            
             if data_com:
                 freq = data_com.get('!gui_send_freq', freq)
 

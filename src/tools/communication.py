@@ -26,7 +26,6 @@ class Communication:
         self.session = zenoh.open(zenoh.Config())
         
         # declare pub and sub endings
-        # TODO: change to global suffix for vehicle
         if IS_RC:
             pub_ending = 'to_veh'
             sub_ending = 'to_rc'
@@ -46,10 +45,8 @@ class Communication:
         else:
             self.sub = self.session.declare_subscriber(sub_topic, partial(self.listener_callback, func=listener_func))
 
-        global COMMUNICATION_KEY
-
         if not COMMUNICATION_KEY:
-            type, COMMUNICATION_KEY = ConfigHandler().get_vehicle_config() # TODO: refactor, so that every config value gets imported at init and by ConfigHandler
+            type, COMMUNICATION_KEY = ConfigHandler().get_vehicle_config()
         
         self.msgr = Messenger(COMMUNICATION_KEY) # name will not be shown in the communication messages
         self.mp_connect_sub = mp_connect_sub
@@ -65,6 +62,7 @@ class Communication:
         """
         tm = Timer(start=True)
         pressed_time = None
+        ems = False
         while True:
 
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
@@ -96,8 +94,14 @@ class Communication:
             if pressed_time:
                 msg = msg.pop('time') 
 
-            # TODO: add logging, so that important messages are logged, but at a better place 
             msg = dict(msg) # unnessecary, but validate message, if not valid, it raises an error
+            
+            if msg.get('ems', 0) == 1: # emergency stop
+                self.log.warning('Sending emergency stop.')
+                ems = True
+            elif ems == True:
+                ems = False
+
             msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else datetime.now(), '', head=0, log=False, **msg)
 
             if DEBUG_MODE:
@@ -109,7 +113,11 @@ class Communication:
             if self.mp_connect_sub is not None and not HEADLESS_MODE: # send send frequency to gui
                 self.mp_connect_sub.put({'!gui_send_freq': tm.get_refresh_rate()})
             
-            self.publish_com_msg(msg)
+            status = self.publish_com_msg(msg)
+
+            if ems and status:
+                raise RuntimeError('Emergency stop sent but the vehicle can not be reached, terminating communication so that program has to be restarted.')
+
             tm.interval()
 
     def sub_loop_sim(self):
@@ -120,7 +128,6 @@ class Communication:
         if not self.tm:
             self.tm = Timer(start=True)
         while True:
-            # FIXME: check if this method works with the listener callbacks
             if self.tm is None:
                 time.sleep(0.001)
                 continue
@@ -128,7 +135,7 @@ class Communication:
                 self.log.debug('No message received for a while, sending emergency stop.')
                 self.mp_connect_sub.send({'ems':1}) # send emergency stop if no message was received for a while
                 return
-            time.sleep(0.1) # TODO: find a better solution to keep the process alive
+            time.sleep(0.1)
 
     def publish_com_msg(self, msg: str):
         """
@@ -138,7 +145,7 @@ class Communication:
             self.pub.put(msg)
             return True
         except Exception as e:
-            # TODO: log error
+            self.log.error(f'Error while publishing message: {e}')
             return False
     
     @sub_savety_interval
@@ -197,7 +204,5 @@ class Communication:
         ) = self.msgr.parse_message(msg)
 
         if self.mp_connect_sub is not None:
-            # TODO: parse config
-            # print(f'msg received: {msg}')
             commands = self.msgr.parse_commands_sim(kwargs)
             self.mp_connect_sub.send(commands)

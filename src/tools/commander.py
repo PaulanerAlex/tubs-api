@@ -1,5 +1,3 @@
-# TODO: rename file
-
 import subprocess
 import sys
 import os
