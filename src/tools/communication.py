@@ -60,7 +60,6 @@ class Communication:
         """
         tm = Timer(start=True)
         pressed_time = None
-        ems = False
         while True:
 
             # send ping if the last message was sent more than PING_SEND_INTERVAL seconds ago so constant upstream is ensured
@@ -96,9 +95,6 @@ class Communication:
             
             if msg.get('ems', 0) == 1: # emergency stop
                 self.log.warning('Sending emergency stop.')
-                ems = True
-            elif ems == True:
-                ems = False
 
             msg = self.msgr.format_message(-1, pressed_time if pressed_time is not None else datetime.now(), '', head=0, log=False, **msg)
 
@@ -113,8 +109,9 @@ class Communication:
             
             status = self.publish_com_msg(msg)
 
-            if ems and status:
-                raise RuntimeError('Emergency stop sent but the vehicle can not be reached, terminating communication so that program has to be restarted.')
+            if not status:
+                self.log.error('Error while publishing message. Exiting communication process.')
+                raise RuntimeError('Error while publishing message. Exiting communication process.')
 
             tm.interval()
 
