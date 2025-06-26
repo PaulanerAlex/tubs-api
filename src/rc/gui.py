@@ -50,6 +50,7 @@ class GUI:
         self.mp_connect = mp_connect
         self.mp_connect_com = mp_connect_com
         self.glob_qu = glob_qu
+        unplugged = False
         self.display.clear()
         acc = 0
         dcc = 0
@@ -74,19 +75,28 @@ class GUI:
                 data_com = None
 
             if latest_data:
-                data = latest_data
-                acc = data.get('acc', acc)
-                dcc = data.get('dcc', dcc)
-                steer = data.get('str', steer)
                 if data.get('unplugged') == True:
                     self.display_text('Controller unplugged')
+                    unplugged = True
+                    data.pop('unplugged', None)
                     continue
                 elif data.get('gui_menu'):
                     self.menu_state = 'options_menu'
                     self.display_options_menu()
                     if self.terminate:
                         return
+                elif unplugged:
+                    self.display_text('Controller plugged in')
+                    time.sleep(1)
+                    unplugged = False
+                data = latest_data
+                acc = data.get('acc', acc)
+                dcc = data.get('dcc', dcc)
+                steer = data.get('str', steer)
             
+            if unplugged:
+                continue
+
             if data_com:
                 freq = data_com.get('!gui_send_freq', freq)
 

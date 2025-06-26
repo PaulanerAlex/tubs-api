@@ -38,7 +38,6 @@ class ConfigHandler:
             com_norm_map = self._get_content['communication']['encoding_norm'] if not self.com_norm_map else self.com_norm_map
         except KeyError:
             raise NotImplementedError('communication config or some of the fields not found in config file')
-        # TODO: add support for buttons
         if input_key in com_map.keys():
             norm_val = com_norm_map[input_key] if input_key in com_norm_map.keys() else None
             return com_map[input_key], norm_val 
