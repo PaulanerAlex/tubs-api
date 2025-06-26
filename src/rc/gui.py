@@ -69,10 +69,15 @@ class GUI:
             while mp_connect.poll():
                 latest_data = mp_connect.recv()
 
-            try:
-                data_com = mp_connect_com.get(block=False)
-            except Exception: # if the queue is empty
-                data_com = None
+
+            # Drain the queue to get the latest message
+            data_com = None
+            while True:
+                try:
+                    item = mp_connect_com.get(block=False)
+                    data_com = item
+                except Exception:  # queue is empty
+                    break
 
             if latest_data:
                 data = latest_data

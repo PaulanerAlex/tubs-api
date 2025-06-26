@@ -17,7 +17,7 @@ class Timer:
     def __init__(self, start=False, interval_resolution=7):
         self.start_time = None
         self.last_intervals = [] # list of intervals
-        self.last_interval_time = None # end time of the last interval / start time of the current interval
+        self.last_interval_time = time.time() if start else None # end time of the last interval / start time of the current interval
         self.interval_resolution = interval_resolution # time intervals stored
         self.start_interval = None # time since start
         if start:
@@ -27,6 +27,7 @@ class Timer:
     def start(self):
         """Start the timer."""
         self.start_time = time.time()
+        self.last_interval_time = self.last_interval_time if self.last_interval_time is not None else time.time()
 
     def stop(self):
         """Stop the timer and return the elapsed time."""
@@ -45,13 +46,12 @@ class Timer:
     
     def interval(self):
         """Return the time since the last interval."""
-        if self.last_interval_time is None:
-            self.last_interval_time = time.time()
-        delta = time.time() - self.last_interval_time
+        before_last_interval = self.last_interval_time # copy last interval time
+        self.last_interval_time = time.time() # set new last interval time
+        delta = self.last_interval_time - before_last_interval
         self.last_intervals.append(delta)
         if len(self.last_intervals) > self.interval_resolution:
             self.last_intervals.pop(0)
-        self.last_interval_time = time.time()
         return delta
     
     def get_refresh_rate(self):
