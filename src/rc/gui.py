@@ -75,6 +75,7 @@ class GUI:
                 data_com = None
 
             if latest_data:
+                data = latest_data
                 if data.get('unplugged') == True:
                     self.display_text('Controller unplugged')
                     unplugged = True
@@ -89,7 +90,6 @@ class GUI:
                     self.display_text('Controller plugged in')
                     time.sleep(1)
                     unplugged = False
-                data = latest_data
                 acc = data.get('acc', acc)
                 dcc = data.get('dcc', dcc)
                 steer = data.get('str', steer)
