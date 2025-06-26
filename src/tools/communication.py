@@ -1,8 +1,6 @@
 import zenoh
 from config.config import IS_RC, COMMUNICATION_KEY, IS_VEHICLE, DEBUG_MODE, HEADLESS_MODE, PING_SEND_INTERVAL, SUB_TIMEOUT
 from tools.messenger import Messenger
-from multiprocessing import Pipe
-from tools.config_handler import ConfigHandler
 from functools import partial
 import time
 from datetime import datetime
@@ -33,6 +31,9 @@ class Communication:
             pub_ending = 'to_rc'
             sub_ending = 'to_veh'
 
+        if key == '':
+            key = COMMUNICATION_KEY
+
         pub_topic = str(self.key) + f'/{pub_ending}'
         sub_topic = str(self.key) + f'/{sub_ending}'
 
@@ -44,9 +45,6 @@ class Communication:
             self.sub = None
         else:
             self.sub = self.session.declare_subscriber(sub_topic, partial(self.listener_callback, func=listener_func))
-
-        if not COMMUNICATION_KEY:
-            type, COMMUNICATION_KEY = ConfigHandler().get_vehicle_config()
         
         self.msgr = Messenger(COMMUNICATION_KEY) # name will not be shown in the communication messages
         self.mp_connect_sub = mp_connect_sub
