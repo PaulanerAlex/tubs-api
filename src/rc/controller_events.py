@@ -43,7 +43,7 @@ class ControllerEvents:
                     continue
 
         # replace gui updates with the local ones from controller if debugging without Vehicle
-        if DEBUG_MODE and not HEADLESS_MODE:
+        if not HEADLESS_MODE:
             ev_dict_gui.update(ev_dict)
 
         return True, ev_dict, ev_dict_gui
@@ -71,7 +71,7 @@ class ControllerEvents:
 
             # display unplugged message if unplugged
             if not status and ev_dict.get('unplugged', False) == True:
-                self.log.warning('Controller unplugged')                
+                self.log.warning('Controller unplugged')          
                 if not HEADLESS_MODE:
                     self.mp_connect_gui.send(ev_dict_gui)
 
